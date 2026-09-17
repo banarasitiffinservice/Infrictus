@@ -104,5 +104,13 @@ body:before{background:#080808!important}body:after{display:none!important}
     object-fit: contain;
     object-position: left center;
 }
+@media (max-width: 680px) {
+    .site-header .nav-links {
+        display: none !important;
+    }
 
+    .site-header .nav-links.open {
+        display: flex !important;
+    }
+}
 

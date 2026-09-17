@@ -1,10 +1,37 @@
 // CHANGE THIS NUMBER BEFORE DEPLOYMENT. Use digits only, including country code.
 const WHATSAPP_NUMBER = '916388605805';
-
 const menuToggle = document.querySelector('.menu-toggle');
 const navLinks = document.querySelector('.nav-links');
-menuToggle?.addEventListener('click', () => navLinks.classList.toggle('open'));
-document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+// Keep mobile navbar closed when website opens
+navLinks?.classList.remove('open');
+
+menuToggle?.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+
+  menuToggle.setAttribute(
+    'aria-label',
+    navLinks.classList.contains('open')
+      ? 'Close menu'
+      : 'Open menu'
+  );
+});
+
+// Close navbar when clicking any navigation link
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    menuToggle?.setAttribute('aria-label', 'Open menu');
+  });
+});
+
+// Close navbar when switching to desktop screen
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 680) {
+    navLinks.classList.remove('open');
+    menuToggle?.setAttribute('aria-label', 'Open menu');
+  }
+});
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) entry.target.classList.add('visible');

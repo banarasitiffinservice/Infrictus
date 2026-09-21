@@ -235,41 +235,33 @@ h3{
 
 .logo-frame{
     width:100%;
-    min-height:420px;
-    padding:25px;
+    height:auto;
+    min-height:0;
+    padding:0;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:block;
 
     border:1px solid rgba(212,175,55,.35);
     border-radius:22px;
 
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(212,175,55,.10),
-            transparent 65%
-        ),
-        #0c0c0c;
+    background:#0c0c0c;
 
     overflow:hidden;
 }
 
 .infrictus-logo{
     display:block;
+
     width:100%;
-    height:100%;
+    height:auto;
 
     max-width:none;
     max-height:none;
 
-    object-fit:cover;
+    object-fit:initial;
     object-position:center;
 
     border-radius:21px;
-
-    transition:none;
 }
 .logo-frame{
     width:100%;
@@ -1242,29 +1234,24 @@ RESPONSIVE
         flex-direction:column;
     }
 
-    .logo-frame{
+    
+.logo-frame{
+    order:-1;
     width:100%;
-    min-height:420px;
+    height:auto;
+    min-height:0;
     padding:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border:1px solid rgba(212,175,55,.35);
-    border-radius:22px;
-    background:#0c0c0c;
-    overflow:hidden;
+    margin:0 auto 25px;
 }
 
-  .infrictus-logo{
+ .infrictus-logo{
     width:100%;
-    height:100%;
+    height:auto;
     max-width:none;
     max-height:none;
-    object-fit:cover;
-    object-position:center;
+    object-fit:initial;
     border-radius:21px;
 }
-
     .hero-copy{
         order:2;
     }

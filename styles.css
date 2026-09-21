@@ -88,12 +88,13 @@ select{
   border-bottom:1px solid rgba(214,173,85,.12);
 }
 
+/* NAVBAR LOGO - SLIGHTLY LARGER */
 .logo img{
-  width:48px;
-  height:48px;
-  object-fit:contain;
+    width:150px;
+    height:auto;
+    object-fit:contain;
+    display:block;
 }
-
 .nav-links{
   display:flex;
   align-items:center;

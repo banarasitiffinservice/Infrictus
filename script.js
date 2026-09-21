@@ -1,7 +1,6 @@
+
 /* =========================================================
-   INFRICTUS — FINAL SCRIPT
-   Official interaction layer: navigation, WhatsApp, modal,
-   independent responsive sliders, swipe and pause/resume.
+   INFRICTUS - FINAL INTERACTION SCRIPT
    ========================================================= */
 
 const WHATSAPP_NUMBER = "916388605805";
@@ -10,25 +9,16 @@ const WHATSAPP_NUMBER = "916388605805";
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
 navLinks?.classList.remove("open");
-
 menuToggle?.addEventListener("click", () => {
   navLinks?.classList.toggle("open");
-  const isOpen = navLinks?.classList.contains("open");
-  menuToggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+  menuToggle.setAttribute("aria-label",
+    navLinks.classList.contains("open") ? "Close menu" : "Open menu");
 });
-
 document.querySelectorAll(".nav-links a").forEach(link => {
   link.addEventListener("click", () => {
     navLinks?.classList.remove("open");
-    menuToggle?.setAttribute("aria-label", "Open menu");
+    menuToggle?.setAttribute("aria-label","Open menu");
   });
-});
-
-window.addEventListener("resize", () => {
-  if (window.innerWidth > 680) {
-    navLinks?.classList.remove("open");
-    menuToggle?.setAttribute("aria-label", "Open menu");
-  }
 });
 
 /* SCROLL REVEAL */
@@ -36,30 +26,23 @@ const revealObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) entry.target.classList.add("visible");
   });
-}, { threshold: 0.12 });
-
+},{threshold:.12});
 document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
 
-/* WHATSAPP CONTACT FORM */
+/* CONTACT FORM */
 document.getElementById("contact-form")?.addEventListener("submit", event => {
   event.preventDefault();
   const form = new FormData(event.currentTarget);
-  const name = form.get("name") || "";
-  const service = form.get("service") || "";
-  const messageText = form.get("message") || "";
-
+  const message =
+    `Hello INFRICTUS,\n\nName: ${form.get("name") || ""}\n` +
+    `Service: ${form.get("service") || ""}\nMessage: ${form.get("message") || ""}`;
   if (!WHATSAPP_NUMBER || WHATSAPP_NUMBER.includes("X")) {
     alert("Please update the WhatsApp number in script.js before using the form.");
     return;
   }
-
-  const message =
-    `Hello INFRICTUS,\n\nName: ${name}\nService: ${service}\nMessage: ${messageText}`;
-
   window.open(
     `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-    "_blank",
-    "noopener,noreferrer"
+    "_blank","noopener,noreferrer"
   );
 });
 
@@ -67,210 +50,233 @@ document.getElementById("contact-form")?.addEventListener("submit", event => {
 const imageModal = document.getElementById("image-modal");
 const modalImage = document.getElementById("modal-image");
 const modalClose = document.getElementById("modal-close");
-
-function closeImageModal() {
+const closeImageModal = () => {
   imageModal?.classList.remove("open");
-  imageModal?.setAttribute("aria-hidden", "true");
+  imageModal?.setAttribute("aria-hidden","true");
   if (modalImage) modalImage.src = "";
   document.body.style.overflow = "";
-  document.querySelectorAll("[data-slider]").forEach(slider => {
-    slider.classList.remove("is-paused");
-    const state = slider.__infrictusSlider;
-    if (state) state.resumeAfterInteraction();
-  });
-}
-
-function openImageModal(image) {
+  document.querySelectorAll("[data-slider]").forEach(s => s.classList.remove("is-paused"));
+};
+const openImageModal = image => {
   if (!imageModal || !modalImage) return;
   modalImage.src = image.currentSrc || image.src;
   modalImage.alt = image.alt || "INFRICTUS preview";
   imageModal.classList.add("open");
-  imageModal.setAttribute("aria-hidden", "false");
+  imageModal.setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
-}
-
-document.addEventListener("click", event => {
-  const image = event.target.closest(".zoomable-image");
-  if (image) openImageModal(image);
-});
-
-document.addEventListener("keydown", event => {
-  const image = event.target.closest?.(".zoomable-image");
-  if (image && (event.key === "Enter" || event.key === " ")) {
-    event.preventDefault();
-    openImageModal(image);
-  }
-  if (event.key === "Escape") closeImageModal();
-});
-
+};
 document.querySelectorAll(".zoomable-image").forEach(image => {
   image.tabIndex = 0;
-  image.setAttribute("role", "button");
+  image.setAttribute("role","button");
+  image.addEventListener("click",() => openImageModal(image));
+  image.addEventListener("keydown",event => {
+    if(event.key === "Enter" || event.key === " "){
+      event.preventDefault();
+      openImageModal(image);
+    }
+  });
 });
-modalClose?.addEventListener("click", closeImageModal);
-imageModal?.addEventListener("click", event => {
-  if (event.target === imageModal) closeImageModal();
+modalClose?.addEventListener("click",closeImageModal);
+imageModal?.addEventListener("click",event => {
+  if(event.target === imageModal) closeImageModal();
+});
+document.addEventListener("keydown",event => {
+  if(event.key === "Escape") closeImageModal();
 });
 
 /* =========================================================
-   INDEPENDENT RESPONSIVE SLIDERS
+   TOUCH-FIRST INDEPENDENT SLIDERS
+   - no arrow UI
+   - auto rotate
+   - swipe / drag
+   - pause on hover / touch / click
+   - smooth loop using cloned slides
+   - every slider owns its own state
    ========================================================= */
-class InfrictusSlider {
-  constructor(root) {
-    this.root = root;
-    this.viewport = root.querySelector(".slider-viewport");
-    this.track = root.querySelector(".slider-track");
-    this.slides = [...root.querySelectorAll(".slider-slide")];
-    this.prev = root.querySelector(".slider-arrow.prev");
-    this.next = root.querySelector(".slider-arrow.next");
-    this.dots = root.querySelector(".slider-dots");
-    this.index = 0;
-    this.timer = null;
-    this.resumeTimer = null;
-    this.pointerStart = null;
-    this.pointerDelta = 0;
-    this.isInteracting = false;
-    this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+class TouchSlider{
+  constructor(root){
+    this.root=root;
+    this.viewport=root.querySelector(".slider-viewport");
+    this.track=root.querySelector(".slider-track");
+    this.dots=root.querySelector(".slider-dots");
+    if(!this.viewport || !this.track) return;
 
-    if (!this.viewport || !this.track || this.slides.length < 1) return;
-    this.setup();
+    this.original=[...this.track.children];
+    this.index=0;
+    this.timer=null;
+    this.resumeTimer=null;
+    this.dragging=false;
+    this.startX=0;
+    this.currentX=0;
+    this.baseTranslate=0;
+    this.speed=Number(root.dataset.autoplay || 4000);
+    this.bind();
+    this.build();
   }
 
-  visibleCount() {
-    if (window.innerWidth <= 680) return 1;
-    if (window.innerWidth <= 1000) return 2;
+  visible(){
+    if(innerWidth <= 620) return 1;
+    if(innerWidth <= 900) return 2;
     return 3;
   }
 
-  maxIndex() {
-    return Math.max(0, this.slides.length - this.visibleCount());
+  build(){
+    this.stop();
+    this.track.innerHTML="";
+    const count=this.original.length;
+    const visible=Math.min(this.visible(),Math.max(1,count));
+    this.visibleCount=visible;
+
+    /* enough clones for a seamless boundary */
+    const head=this.original.slice(0,visible).map(n=>n.cloneNode(true));
+    const tail=this.original.slice(-visible).map(n=>n.cloneNode(true));
+    tail.forEach(n=>this.track.appendChild(n));
+    this.original.forEach(n=>this.track.appendChild(n.cloneNode(true)));
+    head.forEach(n=>this.track.appendChild(n));
+
+    this.realCount=count;
+    this.index=visible;
+    this.dots.innerHTML="";
+    for(let i=0;i<count;i++){
+      const b=document.createElement("button");
+      b.type="button";
+      b.setAttribute("aria-label",`Go to slide ${i+1}`);
+      b.addEventListener("click",()=>{
+        this.pause();
+        this.goTo(visible+i,true);
+        this.delayedResume();
+      });
+      this.dots.appendChild(b);
+    }
+    this.layout(false);
+    this.updateDots();
+    this.start();
   }
 
-  setup() {
-    this.renderDots();
-    this.prev?.addEventListener("click", () => this.go(this.index - 1, true));
-    this.next?.addEventListener("click", () => this.go(this.index + 1, true));
+  stepWidth(){
+    const first=this.track.children[0];
+    if(!first) return this.viewport.clientWidth;
+    const gap=parseFloat(getComputedStyle(this.track).gap)||0;
+    return first.getBoundingClientRect().width+gap;
+  }
 
-    this.root.addEventListener("mouseenter", () => this.pause());
-    this.root.addEventListener("mouseleave", () => this.resumeAfterInteraction());
-    this.root.addEventListener("focusin", () => this.pause());
-    this.root.addEventListener("focusout", () => this.resumeAfterInteraction());
+  layout(animate=true){
+    this.track.style.transition=animate ? "transform .62s cubic-bezier(.22,.7,.2,1)" : "none";
+    this.baseTranslate=this.index*this.stepWidth();
+    this.track.style.transform=`translate3d(${-this.baseTranslate}px,0,0)`;
+  }
 
-    this.viewport.addEventListener("pointerdown", e => {
-      this.isInteracting = true;
-      this.pointerStart = e.clientX;
-      this.pointerDelta = 0;
+  goTo(index,animate=true){
+    this.index=index;
+    this.layout(animate);
+    this.updateDots();
+  }
+
+  updateDots(){
+    if(!this.dots) return;
+    let real=(this.index-this.visibleCount)%this.realCount;
+    if(real<0) real+=this.realCount;
+    [...this.dots.children].forEach((b,i)=>b.classList.toggle("is-active",i===real));
+  }
+
+  normalize(){
+    const min=this.visibleCount;
+    const max=this.visibleCount+this.realCount;
+    if(this.index>=max){
+      this.index=min;
+      this.layout(false);
+    }else if(this.index<min){
+      this.index=max-1;
+      this.layout(false);
+    }
+    this.updateDots();
+  }
+
+  next(){
+    if(this.realCount<=this.visibleCount) return;
+    this.goTo(this.index+1,true);
+  }
+
+  start(){
+    this.stop();
+    if(this.realCount<=this.visibleCount) return;
+    this.timer=setInterval(()=>this.next(),this.speed);
+  }
+
+  stop(){
+    clearInterval(this.timer);
+    this.timer=null;
+  }
+
+  pause(){
+    this.stop();
+    this.root.classList.add("is-paused");
+    clearTimeout(this.resumeTimer);
+  }
+
+  delayedResume(){
+    clearTimeout(this.resumeTimer);
+    this.resumeTimer=setTimeout(()=>{
+      this.root.classList.remove("is-paused");
+      this.start();
+    },900);
+  }
+
+  bind(){
+    this.root.addEventListener("mouseenter",()=>this.pause());
+    this.root.addEventListener("mouseleave",()=>this.delayedResume());
+    this.root.addEventListener("focusin",()=>this.pause());
+    this.root.addEventListener("focusout",()=>this.delayedResume());
+
+    this.viewport.addEventListener("pointerdown",e=>{
       this.pause();
+      this.dragging=true;
+      this.root.classList.add("is-dragging");
+      this.startX=e.clientX;
+      this.currentX=e.clientX;
+      this.track.style.transition="none";
       this.viewport.setPointerCapture?.(e.pointerId);
     });
 
-    this.viewport.addEventListener("pointermove", e => {
-      if (!this.isInteracting || this.pointerStart === null) return;
-      this.pointerDelta = e.clientX - this.pointerStart;
+    this.viewport.addEventListener("pointermove",e=>{
+      if(!this.dragging) return;
+      this.currentX=e.clientX;
+      const delta=this.currentX-this.startX;
+      const offset=this.index*this.stepWidth()-delta;
+      this.track.style.transform=`translate3d(${-offset}px,0,0)`;
     });
 
-    const finishPointer = () => {
-      if (!this.isInteracting) return;
-      const delta = this.pointerDelta;
-      this.isInteracting = false;
-      this.pointerStart = null;
-
-      if (Math.abs(delta) > 45) {
-        this.go(delta < 0 ? this.index + 1 : this.index - 1, false);
+    const end=e=>{
+      if(!this.dragging) return;
+      this.dragging=false;
+      this.root.classList.remove("is-dragging");
+      const delta=this.currentX-this.startX;
+      const threshold=Math.min(90,Math.max(42,this.viewport.clientWidth*.12));
+      if(Math.abs(delta)>threshold){
+        this.goTo(this.index+(delta<0?1:-1),true);
+      }else{
+        this.layout(true);
       }
-      this.resumeAfterInteraction();
+      this.delayedResume();
+      try{this.viewport.releasePointerCapture?.(e.pointerId)}catch(_){}
     };
+    this.viewport.addEventListener("pointerup",end);
+    this.viewport.addEventListener("pointercancel",end);
 
-    this.viewport.addEventListener("pointerup", finishPointer);
-    this.viewport.addEventListener("pointercancel", finishPointer);
-
-    window.addEventListener("resize", () => {
-      this.index = Math.min(this.index, this.maxIndex());
-      this.update(false);
-      this.renderDots();
+    this.track.addEventListener("transitionend",()=>{
+      this.normalize();
     });
 
-    this.update(false);
-    this.start();
-    this.root.__infrictusSlider = this;
-  }
-
-  renderDots() {
-    if (!this.dots) return;
-    this.dots.innerHTML = "";
-    const count = this.maxIndex() + 1;
-    for (let i = 0; i < count; i++) {
-      const dot = document.createElement("button");
-      dot.type = "button";
-      dot.className = "slider-dot" + (i === this.index ? " active" : "");
-      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
-      dot.addEventListener("click", () => this.go(i, true));
-      this.dots.appendChild(dot);
-    }
-  }
-
-  update(animate = true) {
-    const first = this.slides[0];
-    if (!first) return;
-    const gap = parseFloat(getComputedStyle(this.track).gap) || 0;
-    const distance = first.getBoundingClientRect().width + gap;
-    this.track.style.transition = animate ? "" : "none";
-    this.track.style.transform = `translate3d(${-this.index * distance}px,0,0)`;
-    if (!animate) {
-      requestAnimationFrame(() => { this.track.style.transition = ""; });
-    }
-    this.dots?.querySelectorAll(".slider-dot").forEach((dot, i) => {
-      dot.classList.toggle("active", i === this.index);
+    window.addEventListener("resize",()=>{
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer=setTimeout(()=>this.build(),150);
     });
-  }
-
-  go(target, userInitiated = false) {
-    const max = this.maxIndex();
-    if (max === 0) return;
-    if (target > max) target = 0;
-    if (target < 0) target = max;
-    this.index = target;
-    this.update(true);
-    if (userInitiated) this.pauseAndResume();
-  }
-
-  pause() {
-    clearInterval(this.timer);
-    clearTimeout(this.resumeTimer);
-    this.timer = null;
-    this.root.classList.add("is-paused");
-  }
-
-  pauseAndResume() {
-    this.pause();
-    this.resumeTimer = setTimeout(() => this.start(), 1100);
-  }
-
-  resumeAfterInteraction() {
-    clearTimeout(this.resumeTimer);
-    this.resumeTimer = setTimeout(() => this.start(), 900);
-  }
-
-  start() {
-    clearInterval(this.timer);
-    this.root.classList.remove("is-paused");
-    if (this.reduceMotion.matches || this.maxIndex() === 0) return;
-
-    this.timer = setInterval(() => {
-      if (!this.root.matches(":hover") && !this.isInteracting) {
-        this.go(this.index + 1, false);
-      }
-    }, 4200);
   }
 }
 
-document.querySelectorAll("[data-slider]").forEach(root => {
-  new InfrictusSlider(root);
-});
+document.querySelectorAll("[data-slider]").forEach(root => new TouchSlider(root));
 
-/* Reset selected forms on a fresh page load when requested. */
-window.addEventListener("pageshow", () => {
-  document.querySelectorAll("form").forEach(form => {
-    if (form.dataset.resetOnLoad === "true") form.reset();
-  });
+/* keep forms clean after back/forward navigation */
+window.addEventListener("pageshow",()=>{
+  document.querySelectorAll("form[data-reset-on-load='true']").forEach(form=>form.reset());
 });

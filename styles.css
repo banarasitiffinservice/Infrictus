@@ -219,7 +219,82 @@ h3{
   background:#101010;
   box-shadow:0 20px 80px rgba(0,0,0,.5);
 }
+/* ================================
+   INFRICTUS HERO LOGO FRAME
+================================ */
 
+.infrictus-frame{
+    padding:18px;
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.035),
+        rgba(255,255,255,.01)
+    );
+}
+
+.logo-frame{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:340px;
+    padding:35px;
+    border:1px solid rgba(212,175,55,.35);
+    border-radius:22px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(212,175,55,.10),
+            transparent 65%
+        ),
+        #0c0c0c;
+}
+
+.infrictus-logo{
+    width:clamp(150px, 18vw, 210px);
+    height:auto;
+    max-width:85%;
+    object-fit:contain;
+    display:block;
+    transition:transform .4s ease;
+}
+
+.logo-frame:hover .infrictus-logo{
+    transform:scale(1.06);
+}
+
+.hero-card-content{
+    padding:22px 8px 8px;
+}
+
+.hero-project-label{
+    display:block;
+    margin-bottom:12px;
+    color:var(--gold);
+    font-size:.68rem;
+    letter-spacing:.16em;
+    font-weight:700;
+}
+
+.hero-card-content h3{
+    margin:0 0 12px;
+    font-size:clamp(1.4rem,2.5vw,2rem);
+    line-height:1.15;
+}
+
+.hero-card-content p{
+    margin:0 0 18px;
+    color:var(--muted);
+    line-height:1.7;
+}
+
+.hero-project-link{
+    color:var(--gold);
+    text-decoration:none;
+    font-size:.8rem;
+    letter-spacing:.08em;
+    font-weight:700;
+}
 .hero-card img{
   width:100%;
   aspect-ratio:1/1;
@@ -816,15 +891,125 @@ SLIDER CORE
 
 /* IMAGE MODAL */
 
+/* ================================
+   FULL SCREEN IMAGE PREVIEW
+================================ */
+
+.zoomable-image{
+    cursor:zoom-in;
+    transition:transform .35s ease;
+}
+
+.zoomable-image:hover{
+    transform:scale(1.025);
+}
+
 .image-modal{
-  position:fixed;
-  inset:0;
-  z-index:3000;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:30px;
-  background:rgba(0,0,0,.94);
+    position:fixed;
+    inset:0;
+    z-index:99999;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:30px;
+
+    background:rgba(0,0,0,.96);
+
+    backdrop-filter:blur(10px);
+}
+
+.image-modal.open{
+    display:flex;
+}
+
+.image-modal img{
+    display:block;
+
+    width:auto;
+    height:auto;
+
+    max-width:96vw;
+    max-height:92vh;
+
+    object-fit:contain;
+
+    border-radius:12px;
+
+    box-shadow:
+        0 25px 100px rgba(0,0,0,.8);
+
+    animation:imageZoomIn .3s ease;
+}
+
+@keyframes imageZoomIn{
+    from{
+        opacity:0;
+        transform:scale(.82);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.modal-close{
+    position:absolute;
+
+    top:18px;
+    right:24px;
+
+    width:48px;
+    height:48px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:50%;
+
+    background:rgba(0,0,0,.55);
+    color:#fff;
+
+    font-size:32px;
+    line-height:1;
+
+    cursor:pointer;
+
+    z-index:2;
+
+    transition:
+        background .25s ease,
+        transform .25s ease;
+}
+
+.modal-close:hover{
+    background:rgba(212,175,55,.2);
+    transform:rotate(90deg);
+}
+
+@media(max-width:620px){
+
+    .image-modal{
+        padding:15px;
+    }
+
+    .image-modal img{
+        max-width:96vw;
+        max-height:85vh;
+        border-radius:8px;
+    }
+
+    .modal-close{
+        top:12px;
+        right:12px;
+        width:42px;
+        height:42px;
+        font-size:28px;
+    }
 }
 
 .image-modal.open{
@@ -1024,4 +1209,35 @@ RESPONSIVE
 .slider-next,
 .slider-control{
   display:none !important;
+}
+@media(max-width:620px){
+
+    .hero{
+        display:flex;
+        flex-direction:column;
+    }
+
+    .hero-visual{
+        order:-1;
+        width:100%;
+        max-width:100%;
+        margin:0 auto 25px;
+    }
+
+    .infrictus-frame{
+        padding:12px;
+    }
+
+    .logo-frame{
+        min-height:230px;
+        padding:25px;
+    }
+
+    .infrictus-logo{
+    width:clamp(170px, 21vw, 250px);
+}
+
+    .hero-card-content{
+        padding:18px 5px 5px;
+    }
 }

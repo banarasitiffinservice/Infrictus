@@ -239,3 +239,116 @@ body:before{background:#080808!important}body:after{display:none!important}
   .team-card { transition: none; }
 }
 
+/* =========================================================
+   INFRICTUS — OFFICIAL INDEPENDENT SLIDER SYSTEM
+   ========================================================= */
+.slider-shell{
+  position:relative;
+  width:100%;
+  isolation:isolate;
+  padding:20px 56px 48px;
+  margin:0 auto;
+}
+.slider-shell::before,
+.slider-shell::after{
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  height:26px;
+  pointer-events:none;
+  z-index:-1;
+  border-radius:50%;
+  filter:blur(16px);
+}
+.slider-shell::before{
+  top:0;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.95) 15%,rgba(244,210,123,.48) 50%,rgba(0,0,0,.95) 85%,transparent);
+  opacity:.72;
+}
+.slider-shell::after{
+  bottom:4px;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.95) 15%,rgba(244,210,123,.40) 50%,rgba(0,0,0,.95) 85%,transparent);
+  opacity:.65;
+}
+.slider-viewport{
+  overflow:hidden;
+  width:100%;
+  border:1px solid rgba(214,173,85,.20);
+  background:rgba(0,0,0,.12);
+  touch-action:pan-y;
+}
+.slider-track{
+  display:flex;
+  gap:20px;
+  transform:translate3d(0,0,0);
+  transition:transform .62s cubic-bezier(.22,.61,.36,1);
+  will-change:transform;
+}
+.slider-slide{
+  flex:0 0 calc((100% - 40px)/3);
+  min-width:0;
+}
+.slider-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:44px;
+  height:44px;
+  border:1px solid var(--gold);
+  border-radius:50%;
+  background:rgba(5,5,5,.88);
+  color:var(--gold-bright);
+  font-size:2rem;
+  line-height:1;
+  cursor:pointer;
+  z-index:4;
+  display:grid;
+  place-items:center;
+  transition:transform .25s,background .25s,color .25s,box-shadow .25s;
+}
+.slider-arrow:hover{
+  background:var(--gold);
+  color:#080808;
+  box-shadow:0 0 24px rgba(214,173,85,.28);
+}
+.slider-arrow.prev{left:2px}
+.slider-arrow.next{right:2px}
+.slider-dots{
+  position:absolute;
+  left:50%;
+  bottom:8px;
+  transform:translateX(-50%);
+  display:flex;
+  gap:7px;
+  z-index:4;
+}
+.slider-dot{
+  width:7px;height:7px;border-radius:50%;
+  border:1px solid var(--gold);
+  background:transparent;
+  padding:0;cursor:pointer;
+}
+.slider-dot.active{background:var(--gold2);box-shadow:0 0 10px rgba(214,173,85,.45)}
+.slider-shell.is-paused .slider-track{transition-duration:.35s}
+.slider-shell .service-card,
+.slider-shell .payment-card,
+.slider-shell .preview-card,
+.slider-shell .rating-card,
+.slider-shell .team-card,
+.slider-shell .proof-slide{height:100%;}
+
+@media(max-width:1000px){
+  .slider-slide{flex-basis:calc((100% - 20px)/2)}
+}
+@media(max-width:680px){
+  .slider-shell{padding:14px 42px 44px}
+  .slider-slide{flex-basis:100%}
+  .slider-arrow{width:38px;height:38px;font-size:1.7rem}
+  .slider-arrow.prev{left:0}
+  .slider-arrow.next{right:0}
+  .slider-shell::before,.slider-shell::after{left:4%;right:4%;height:22px}
+}
+@media(prefers-reduced-motion:reduce){
+  .slider-track{transition:none!important}
+}

@@ -1,77 +1,235 @@
-// CHANGE THIS NUMBER BEFORE DEPLOYMENT. Use digits only, including country code.
-const WHATSAPP_NUMBER = '916388605805';
-const menuToggle = document.querySelector('.menu-toggle');
-const navLinks = document.querySelector('.nav-links');
+/* =========================================================
+   INFRICTUS - FINAL SCRIPT.JS
+   ========================================================= */
 
-// Keep mobile navbar closed when website opens
-navLinks?.classList.remove('open');
+// WhatsApp number
+const WHATSAPP_NUMBER = "916388605805";
 
-menuToggle?.addEventListener('click', () => {
-  navLinks.classList.toggle('open');
+/* =========================================================
+   MOBILE NAVIGATION
+   ========================================================= */
+
+const menuToggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelector(".nav-links");
+
+navLinks?.classList.remove("open");
+
+menuToggle?.addEventListener("click", () => {
+  navLinks?.classList.toggle("open");
+
+  const isOpen = navLinks?.classList.contains("open");
 
   menuToggle.setAttribute(
-    'aria-label',
-    navLinks.classList.contains('open')
-      ? 'Close menu'
-      : 'Open menu'
+    "aria-label",
+    isOpen ? "Close menu" : "Open menu"
   );
 });
 
-// Close navbar when clicking any navigation link
-document.querySelectorAll('.nav-links a').forEach(a => {
-  a.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-    menuToggle?.setAttribute('aria-label', 'Open menu');
+document.querySelectorAll(".nav-links a").forEach((link) => {
+  link.addEventListener("click", () => {
+    navLinks?.classList.remove("open");
+    menuToggle?.setAttribute("aria-label", "Open menu");
   });
 });
 
-// Close navbar when switching to desktop screen
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
   if (window.innerWidth > 680) {
-    navLinks.classList.remove('open');
-    menuToggle?.setAttribute('aria-label', 'Open menu');
+    navLinks?.classList.remove("open");
+    menuToggle?.setAttribute("aria-label", "Open menu");
   }
 });
 
-const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-  if (entry.isIntersecting) entry.target.classList.add('visible');
-}), { threshold: .12 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+/* =========================================================
+   SCROLL REVEAL ANIMATION
+   ========================================================= */
 
-document.getElementById('contact-form').addEventListener('submit', event => {
-  event.preventDefault();
-  const form = new FormData(event.currentTarget);
-  const message = `Hello INFRICTUS,\n\nName: ${form.get('name')}\nService: ${form.get('service')}\nMessage: ${form.get('message')}`;
-  if (WHATSAPP_NUMBER.includes('X')) {
-    alert('Please update WHATSAPP_NUMBER in script.js before using the WhatsApp form.');
-    return;
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+      }
+    });
+  },
+  {
+    threshold: 0.12,
   }
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+);
+
+document.querySelectorAll(".reveal").forEach((element) => {
+  revealObserver.observe(element);
 });
 
+/* =========================================================
+   CONTACT FORM - WHATSAPP
+   ========================================================= */
 
-// Click-to-expand image previews with a clear close control.
-const imageModal = document.getElementById('image-modal');
-const modalImage = document.getElementById('modal-image');
-const modalClose = document.getElementById('modal-close');
+document
+  .getElementById("contact-form")
+  ?.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const form = new FormData(event.currentTarget);
+
+    const name = form.get("name") || "";
+    const service = form.get("service") || "";
+    const messageText = form.get("message") || "";
+
+    const message =
+      `Hello INFRICTUS,\n\n` +
+      `Name: ${name}\n` +
+      `Service: ${service}\n` +
+      `Message: ${messageText}`;
+
+    if (!WHATSAPP_NUMBER || WHATSAPP_NUMBER.includes("X")) {
+      alert(
+        "Please update the WhatsApp number in script.js before using the form."
+      );
+      return;
+    }
+
+    const whatsappURL =
+      `https://wa.me/${WHATSAPP_NUMBER}` +
+      `?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappURL, "_blank", "noopener,noreferrer");
+  });
+
+/* =========================================================
+   IMAGE MODAL
+   ========================================================= */
+
+const imageModal = document.getElementById("image-modal");
+const modalImage = document.getElementById("modal-image");
+const modalClose = document.getElementById("modal-close");
+
 const closeImageModal = () => {
-  imageModal?.classList.remove('open');
-  imageModal?.setAttribute('aria-hidden','true');
-  if (modalImage) modalImage.src = '';
-  document.body.style.overflow = '';
+  imageModal?.classList.remove("open");
+  imageModal?.setAttribute("aria-hidden", "true");
+
+  if (modalImage) {
+    modalImage.src = "";
+  }
+
+  document.body.style.overflow = "";
+
+  document.querySelectorAll("[data-slider]").forEach((slider) => {
+    slider.classList.remove("is-paused");
+  });
 };
-document.querySelectorAll('.zoomable-image').forEach(image => {
-  const open = () => {
-    if (!imageModal || !modalImage) return;
-    modalImage.src = image.currentSrc || image.src;
-    modalImage.alt = image.alt;
-    imageModal.classList.add('open');
-    imageModal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  };
-  image.addEventListener('click', open);
-  image.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); } });
+
+const openImageModal = (image) => {
+  if (!imageModal || !modalImage) return;
+
+  modalImage.src = image.currentSrc || image.src;
+  modalImage.alt = image.alt || "INFRICTUS preview";
+
+  imageModal.classList.add("open");
+  imageModal.setAttribute("aria-hidden", "false");
+
+  document.body.style.overflow = "hidden";
+};
+
+document.querySelectorAll(".zoomable-image").forEach((image) => {
+  image.addEventListener("click", () => {
+    openImageModal(image);
+  });
+
+  image.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openImageModal(image);
+    }
+  });
+
+  image.setAttribute("tabindex", "0");
+  image.setAttribute("role", "button");
 });
-modalClose?.addEventListener('click', closeImageModal);
-imageModal?.addEventListener('click', event => { if (event.target === imageModal) closeImageModal(); });
-document.addEventListener('keydown', event => { if (event.key === 'Escape') closeImageModal(); });
+
+modalClose?.addEventListener("click", closeImageModal);
+
+imageModal?.addEventListener("click", (event) => {
+  if (event.target === imageModal) {
+    closeImageModal();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeImageModal();
+  }
+});
+
+/* =========================================================
+   AUTOMATIC SLIDER - PAUSE AND RESUME
+   ========================================================= */
+
+document.querySelectorAll("[data-slider]").forEach((slider) => {
+  let resumeTimer;
+
+  const pauseSlider = () => {
+    slider.classList.add("is-paused");
+  };
+
+  const resumeSlider = () => {
+    slider.classList.remove("is-paused");
+  };
+
+  const delayedResume = () => {
+    clearTimeout(resumeTimer);
+
+    resumeTimer = setTimeout(() => {
+      resumeSlider();
+    }, 900);
+  };
+
+  // Desktop hover
+  slider.addEventListener("mouseenter", pauseSlider);
+  slider.addEventListener("mouseleave", resumeSlider);
+
+  // Keyboard focus
+  slider.addEventListener("focusin", pauseSlider);
+  slider.addEventListener("focusout", resumeSlider);
+
+  // Mouse and touch
+  slider.addEventListener("pointerdown", () => {
+    clearTimeout(resumeTimer);
+    pauseSlider();
+  });
+
+  slider.addEventListener("pointerup", () => {
+    delayedResume();
+  });
+
+  slider.addEventListener("pointercancel", () => {
+    resumeSlider();
+  });
+
+  slider.addEventListener("pointerleave", () => {
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      delayedResume();
+    }
+  });
+});
+
+/* =========================================================
+   ACCESSIBILITY - MODAL FOCUS
+   ========================================================= */
+
+imageModal?.addEventListener("transitionend", () => {
+  if (imageModal.classList.contains("open")) {
+    modalClose?.focus();
+  }
+});
+
+/* =========================================================
+   PREVENT FORM RESUBMISSION ON PAGE REFRESH
+   ========================================================= */
+
+window.addEventListener("pageshow", () => {
+  document.querySelectorAll("form").forEach((form) => {
+    if (form.dataset.resetOnLoad === "true") {
+      form.reset();
+    }
+  });
+});

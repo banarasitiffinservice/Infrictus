@@ -266,7 +266,19 @@ h3{
     object-position:center;
     transition:transform .4s ease;
 }
+.logo-frame{
+    position:relative;
+}
 
+.logo-frame::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border:1px solid rgba(212,175,55,.45);
+    border-radius:22px;
+    pointer-events:none;
+    z-index:2;
+}
 .logo-frame:hover .infrictus-logo{
     transform:scale(1.06);
 }

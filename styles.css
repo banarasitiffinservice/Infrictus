@@ -113,4 +113,129 @@ body:before{background:#080808!important}body:after{display:none!important}
         display: flex !important;
     }
 }
+/* =========================================================
+   INFRICTUS PREMIUM SLIDER, TEAM & MILESTONE ADDITIONS
+   Paste this at the END of styles.css
+   ========================================================= */
+
+.infrictus-marquee {
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid var(--line);
+  padding: 18px 0;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+}
+.infrictus-marquee:active { cursor: grabbing; }
+.infrictus-track {
+  display: flex;
+  width: max-content;
+  gap: 20px;
+  animation: infrictusScroll 42s linear infinite;
+  will-change: transform;
+}
+.infrictus-marquee.is-paused .infrictus-track,
+.infrictus-marquee:hover .infrictus-track {
+  animation-play-state: paused;
+}
+.proof-slide {
+  width: clamp(260px, 31vw, 390px);
+  flex: 0 0 auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: linear-gradient(135deg, rgba(214,173,85,.10), #080808);
+}
+.proof-slide img {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: contain;
+  background: #090909;
+  border: 1px solid rgba(214,173,85,.18);
+  cursor: zoom-in;
+}
+.proof-slide div { padding: 18px 4px 5px; }
+.proof-slide span {
+  color: var(--gold2);
+  font-size: .65rem;
+  letter-spacing: .12em;
+  font-weight: 800;
+}
+.proof-slide h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  margin: 10px 0 0;
+}
+@keyframes infrictusScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 10px)); }
+}
+.milestone-section { text-align: center; background: #080808; }
+.milestone-inner { max-width: 850px; margin: auto; }
+.milestone-number {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(5rem, 14vw, 10rem);
+  line-height: .9;
+  color: var(--gold2);
+  font-weight: 800;
+}
+.milestone-number sup { font-size: .38em; vertical-align: top; }
+.milestone-inner h2 { margin-top: 28px; }
+.milestone-inner .muted { max-width: 650px; margin: 25px auto; }
+.milestone-points {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+}
+.milestone-points span::first-letter { color: var(--gold2); }
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.team-card {
+  padding: 28px;
+  border: 1px solid var(--line);
+  background: linear-gradient(135deg, rgba(214,173,85,.09), rgba(8,8,8,.96));
+  transition: transform .25s ease, border-color .25s ease;
+}
+.team-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+.team-avatar {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  color: var(--gold2);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  background: rgba(214,173,85,.07);
+}
+.team-card h3 { margin: 0 0 5px; font-family: 'Playfair Display', serif; font-size: 1.45rem; }
+.team-card span { color: var(--gold2); font-size: .72rem; font-weight: 800; letter-spacing: .04em; }
+.team-card p { color: var(--muted); font-size: .88rem; margin-bottom: 0; }
+
+@media (max-width: 900px) {
+  .team-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 680px) {
+  .infrictus-track { animation-duration: 34s; }
+  .proof-slide { width: min(78vw, 330px); }
+  .proof-slide img { height: 205px; }
+  .team-grid { grid-template-columns: 1fr; }
+  .team-card { padding: 24px; }
+  .milestone-points { flex-direction: column; align-items: center; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .infrictus-track { animation: none; }
+  .team-card { transition: none; }
+}
 

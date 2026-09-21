@@ -185,40 +185,23 @@ function closeImage(){
 }
 
 
-document
-.querySelectorAll(".zoomable-image")
-.forEach(image => {
+/* =========================================
+   IMAGE CLICK HANDLER
+   Works with slider cloned images
+========================================= */
 
-  image.setAttribute(
-    "tabindex",
-    "0"
-  );
+document.addEventListener("click", event => {
 
-  image.addEventListener(
-    "click",
-    () => openImage(image)
-  );
+  const image = event.target.closest(".zoomable-image");
 
-  image.addEventListener(
-    "keydown",
-    event => {
+  if(!image) return;
 
-      if(
-        event.key === "Enter" ||
-        event.key === " "
-      ){
+  event.preventDefault();
+  event.stopPropagation();
 
-        event.preventDefault();
-
-        openImage(image);
-
-      }
-
-    }
-  );
+  openImage(image);
 
 });
-
 
 modalClose?.addEventListener(
 "click",

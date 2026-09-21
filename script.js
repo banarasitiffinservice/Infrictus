@@ -1,282 +1,996 @@
-
-/* =========================================================
-   INFRICTUS - FINAL INTERACTION SCRIPT
-   ========================================================= */
+/* =====================================================
+   INFRICTUS FINAL SLIDER ENGINE
+   ===================================================== */
 
 const WHATSAPP_NUMBER = "916388605805";
 
-/* MOBILE NAVIGATION */
-const menuToggle = document.querySelector(".menu-toggle");
-const navLinks = document.querySelector(".nav-links");
-navLinks?.classList.remove("open");
+
+/* =====================================================
+   MOBILE NAV
+   ===================================================== */
+
+const menuToggle =
+document.querySelector(".menu-toggle");
+
+const navLinks =
+document.querySelector(".nav-links");
+
+
 menuToggle?.addEventListener("click", () => {
-  navLinks?.classList.toggle("open");
-  menuToggle.setAttribute("aria-label",
-    navLinks.classList.contains("open") ? "Close menu" : "Open menu");
-});
-document.querySelectorAll(".nav-links a").forEach(link => {
-  link.addEventListener("click", () => {
-    navLinks?.classList.remove("open");
-    menuToggle?.setAttribute("aria-label","Open menu");
-  });
-});
 
-/* SCROLL REVEAL */
-const revealObserver = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add("visible");
-  });
-},{threshold:.12});
-document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+  const open =
+  navLinks.classList.toggle("open");
 
-/* CONTACT FORM */
-document.getElementById("contact-form")?.addEventListener("submit", event => {
-  event.preventDefault();
-  const form = new FormData(event.currentTarget);
-  const message =
-    `Hello INFRICTUS,\n\nName: ${form.get("name") || ""}\n` +
-    `Service: ${form.get("service") || ""}\nMessage: ${form.get("message") || ""}`;
-  if (!WHATSAPP_NUMBER || WHATSAPP_NUMBER.includes("X")) {
-    alert("Please update the WhatsApp number in script.js before using the form.");
-    return;
-  }
-  window.open(
-    `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-    "_blank","noopener,noreferrer"
+  menuToggle.setAttribute(
+    "aria-expanded",
+    open ? "true" : "false"
   );
+
+  menuToggle.setAttribute(
+    "aria-label",
+    open ? "Close menu" : "Open menu"
+  );
+
 });
 
-/* IMAGE MODAL */
-const imageModal = document.getElementById("image-modal");
-const modalImage = document.getElementById("modal-image");
-const modalClose = document.getElementById("modal-close");
-const closeImageModal = () => {
-  imageModal?.classList.remove("open");
-  imageModal?.setAttribute("aria-hidden","true");
-  if (modalImage) modalImage.src = "";
-  document.body.style.overflow = "";
-  document.querySelectorAll("[data-slider]").forEach(s => s.classList.remove("is-paused"));
-};
-const openImageModal = image => {
-  if (!imageModal || !modalImage) return;
-  modalImage.src = image.currentSrc || image.src;
-  modalImage.alt = image.alt || "INFRICTUS preview";
-  imageModal.classList.add("open");
-  imageModal.setAttribute("aria-hidden","false");
-  document.body.style.overflow = "hidden";
-};
-document.querySelectorAll(".zoomable-image").forEach(image => {
-  image.tabIndex = 0;
-  image.setAttribute("role","button");
-  image.addEventListener("click",() => openImageModal(image));
-  image.addEventListener("keydown",event => {
-    if(event.key === "Enter" || event.key === " "){
-      event.preventDefault();
-      openImageModal(image);
-    }
+
+document.querySelectorAll(".nav-links a")
+.forEach(link => {
+
+  link.addEventListener("click", () => {
+
+    navLinks.classList.remove("open");
+
+    menuToggle?.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+
   });
-});
-modalClose?.addEventListener("click",closeImageModal);
-imageModal?.addEventListener("click",event => {
-  if(event.target === imageModal) closeImageModal();
-});
-document.addEventListener("keydown",event => {
-  if(event.key === "Escape") closeImageModal();
+
 });
 
-/* =========================================================
-   TOUCH-FIRST INDEPENDENT SLIDERS
-   - no arrow UI
-   - auto rotate
-   - swipe / drag
-   - pause on hover / touch / click
-   - smooth loop using cloned slides
-   - every slider owns its own state
-   ========================================================= */
-class TouchSlider{
-  constructor(root){
-    this.root=root;
-    this.viewport=root.querySelector(".slider-viewport");
-    this.track=root.querySelector(".slider-track");
-    this.dots=root.querySelector(".slider-dots");
-    if(!this.viewport || !this.track) return;
 
-    this.original=[...this.track.children];
-    this.index=0;
-    this.timer=null;
-    this.resumeTimer=null;
-    this.dragging=false;
-    this.startX=0;
-    this.currentX=0;
-    this.baseTranslate=0;
-    this.speed=Number(root.dataset.autoplay || 4000);
-    this.bind();
-    this.build();
-  }
+/* =====================================================
+   SCROLL REVEAL
+   ===================================================== */
 
-  visible(){
-    if(innerWidth <= 620) return 1;
-    if(innerWidth <= 900) return 2;
-    return 3;
-  }
+const revealObserver =
+new IntersectionObserver(
+(entries) => {
 
-  build(){
-    this.stop();
-    this.track.innerHTML="";
-    const count=this.original.length;
-    const visible=Math.min(this.visible(),Math.max(1,count));
-    this.visibleCount=visible;
+  entries.forEach(entry => {
 
-    /* enough clones for a seamless boundary */
-    const head=this.original.slice(0,visible).map(n=>n.cloneNode(true));
-    const tail=this.original.slice(-visible).map(n=>n.cloneNode(true));
-    tail.forEach(n=>this.track.appendChild(n));
-    this.original.forEach(n=>this.track.appendChild(n.cloneNode(true)));
-    head.forEach(n=>this.track.appendChild(n));
+    if(entry.isIntersecting){
 
-    this.realCount=count;
-    this.index=visible;
-    this.dots.innerHTML="";
-    for(let i=0;i<count;i++){
-      const b=document.createElement("button");
-      b.type="button";
-      b.setAttribute("aria-label",`Go to slide ${i+1}`);
-      b.addEventListener("click",()=>{
-        this.pause();
-        this.goTo(visible+i,true);
-        this.delayedResume();
-      });
-      this.dots.appendChild(b);
+      entry.target.classList.add("visible");
+
     }
-    this.layout(false);
-    this.updateDots();
-    this.start();
-  }
 
-  stepWidth(){
-    const first=this.track.children[0];
-    if(!first) return this.viewport.clientWidth;
-    const gap=parseFloat(getComputedStyle(this.track).gap)||0;
-    return first.getBoundingClientRect().width+gap;
-  }
+  });
 
-  layout(animate=true){
-    this.track.style.transition=animate ? "transform .62s cubic-bezier(.22,.7,.2,1)" : "none";
-    this.baseTranslate=this.index*this.stepWidth();
-    this.track.style.transform=`translate3d(${-this.baseTranslate}px,0,0)`;
-  }
+},
+{
+  threshold:.12
+});
 
-  goTo(index,animate=true){
-    this.index=index;
-    this.layout(animate);
-    this.updateDots();
-  }
 
-  updateDots(){
-    if(!this.dots) return;
-    let real=(this.index-this.visibleCount)%this.realCount;
-    if(real<0) real+=this.realCount;
-    [...this.dots.children].forEach((b,i)=>b.classList.toggle("is-active",i===real));
-  }
+document
+.querySelectorAll(".reveal")
+.forEach(el =>
+revealObserver.observe(el)
+);
 
-  normalize(){
-    const min=this.visibleCount;
-    const max=this.visibleCount+this.realCount;
-    if(this.index>=max){
-      this.index=min;
-      this.layout(false);
-    }else if(this.index<min){
-      this.index=max-1;
-      this.layout(false);
-    }
-    this.updateDots();
-  }
 
-  next(){
-    if(this.realCount<=this.visibleCount) return;
-    this.goTo(this.index+1,true);
-  }
+/* =====================================================
+   WHATSAPP CONTACT
+   ===================================================== */
 
-  start(){
-    this.stop();
-    if(this.realCount<=this.visibleCount) return;
-    this.timer=setInterval(()=>this.next(),this.speed);
-  }
+document
+.getElementById("contact-form")
+?.addEventListener("submit", event => {
 
-  stop(){
-    clearInterval(this.timer);
-    this.timer=null;
-  }
+  event.preventDefault();
 
-  pause(){
-    this.stop();
-    this.root.classList.add("is-paused");
-    clearTimeout(this.resumeTimer);
-  }
+  const form =
+  new FormData(event.currentTarget);
 
-  delayedResume(){
-    clearTimeout(this.resumeTimer);
-    this.resumeTimer=setTimeout(()=>{
-      this.root.classList.remove("is-paused");
-      this.start();
-    },900);
-  }
+  const name =
+  form.get("name") || "";
 
-  bind(){
-    this.root.addEventListener("mouseenter",()=>this.pause());
-    this.root.addEventListener("mouseleave",()=>this.delayedResume());
-    this.root.addEventListener("focusin",()=>this.pause());
-    this.root.addEventListener("focusout",()=>this.delayedResume());
+  const service =
+  form.get("service") || "";
 
-    this.viewport.addEventListener("pointerdown",e=>{
-      this.pause();
-      this.dragging=true;
-      this.root.classList.add("is-dragging");
-      this.startX=e.clientX;
-      this.currentX=e.clientX;
-      this.track.style.transition="none";
-      this.viewport.setPointerCapture?.(e.pointerId);
-    });
+  const message =
+  form.get("message") || "";
 
-    this.viewport.addEventListener("pointermove",e=>{
-      if(!this.dragging) return;
-      this.currentX=e.clientX;
-      const delta=this.currentX-this.startX;
-      const offset=this.index*this.stepWidth()-delta;
-      this.track.style.transform=`translate3d(${-offset}px,0,0)`;
-    });
 
-    const end=e=>{
-      if(!this.dragging) return;
-      this.dragging=false;
-      this.root.classList.remove("is-dragging");
-      const delta=this.currentX-this.startX;
-      const threshold=Math.min(90,Math.max(42,this.viewport.clientWidth*.12));
-      if(Math.abs(delta)>threshold){
-        this.goTo(this.index+(delta<0?1:-1),true);
-      }else{
-        this.layout(true);
-      }
-      this.delayedResume();
-      try{this.viewport.releasePointerCapture?.(e.pointerId)}catch(_){}
-    };
-    this.viewport.addEventListener("pointerup",end);
-    this.viewport.addEventListener("pointercancel",end);
+  const text =
+`Hello INFRICTUS,
 
-    this.track.addEventListener("transitionend",()=>{
-      this.normalize();
-    });
+Name: ${name}
+Service: ${service}
 
-    window.addEventListener("resize",()=>{
-      clearTimeout(this.resizeTimer);
-      this.resizeTimer=setTimeout(()=>this.build(),150);
-    });
-  }
+Message:
+${message}`;
+
+
+  const url =
+  `https://wa.me/${WHATSAPP_NUMBER}` +
+  `?text=${encodeURIComponent(text)}`;
+
+
+  window.open(
+    url,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+});
+
+
+/* =====================================================
+   IMAGE MODAL
+   ===================================================== */
+
+const imageModal =
+document.getElementById("image-modal");
+
+const modalImage =
+document.getElementById("modal-image");
+
+const modalClose =
+document.getElementById("modal-close");
+
+
+function openImage(image){
+
+  if(!imageModal || !modalImage)
+  return;
+
+  modalImage.src =
+  image.currentSrc || image.src;
+
+  modalImage.alt =
+  image.alt || "INFRICTUS preview";
+
+  imageModal.classList.add("open");
+
+  imageModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+  document.body.style.overflow =
+  "hidden";
+
 }
 
-document.querySelectorAll("[data-slider]").forEach(root => new TouchSlider(root));
 
-/* keep forms clean after back/forward navigation */
-window.addEventListener("pageshow",()=>{
-  document.querySelectorAll("form[data-reset-on-load='true']").forEach(form=>form.reset());
+function closeImage(){
+
+  imageModal?.classList.remove("open");
+
+  imageModal?.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  if(modalImage)
+  modalImage.src = "";
+
+  document.body.style.overflow =
+  "";
+
+}
+
+
+document
+.querySelectorAll(".zoomable-image")
+.forEach(image => {
+
+  image.setAttribute(
+    "tabindex",
+    "0"
+  );
+
+  image.addEventListener(
+    "click",
+    () => openImage(image)
+  );
+
+  image.addEventListener(
+    "keydown",
+    event => {
+
+      if(
+        event.key === "Enter" ||
+        event.key === " "
+      ){
+
+        event.preventDefault();
+
+        openImage(image);
+
+      }
+
+    }
+  );
+
+});
+
+
+modalClose?.addEventListener(
+"click",
+closeImage
+);
+
+
+imageModal?.addEventListener(
+"click",
+event => {
+
+  if(event.target === imageModal)
+  closeImage();
+
+});
+
+
+document.addEventListener(
+"keydown",
+event => {
+
+  if(event.key === "Escape")
+  closeImage();
+
+});
+
+
+/* =====================================================
+   UNIVERSAL TOUCH SLIDER
+   ===================================================== */
+
+class InfrictusSlider{
+
+  constructor(root){
+
+    this.root = root;
+
+    this.viewport =
+    root.querySelector(
+      ".slider-viewport"
+    );
+
+    this.track =
+    root.querySelector(
+      ".slider-track"
+    );
+
+    this.dots =
+    root.querySelector(
+      ".slider-dots"
+    );
+
+    if(
+      !this.viewport ||
+      !this.track
+    ){
+
+      return;
+
+    }
+
+
+    this.originalSlides =
+    Array.from(
+      this.track.children
+    );
+
+
+    this.total =
+    this.originalSlides.length;
+
+
+    this.index = 0;
+
+    this.timer = null;
+
+    this.resumeTimer = null;
+
+    this.dragging = false;
+
+    this.startX = 0;
+
+    this.currentX = 0;
+
+    this.speed =
+    Number(
+      root.dataset.speed || 4000
+    );
+
+
+    this.init();
+
+  }
+
+
+  /* -----------------------------------------------
+     NUMBER OF VISIBLE SLIDES
+  ------------------------------------------------ */
+
+  getVisible(){
+
+    if(window.innerWidth <= 620)
+    return 1;
+
+    if(window.innerWidth <= 950)
+    return 2;
+
+    return 3;
+
+  }
+
+
+  /* -----------------------------------------------
+     BUILD SLIDER
+  ------------------------------------------------ */
+
+  build(){
+
+    this.stop();
+
+    this.visible =
+    Math.min(
+      this.getVisible(),
+      this.total
+    );
+
+
+    this.track.innerHTML = "";
+
+
+    /*
+      Clone last slides before original slides
+      and first slides after original slides.
+      This creates the seamless loop.
+    */
+
+
+    const before =
+    this.originalSlides
+    .slice(-this.visible)
+    .map(slide =>
+      slide.cloneNode(true)
+    );
+
+
+    const original =
+    this.originalSlides
+    .map(slide =>
+      slide.cloneNode(true)
+    );
+
+
+    const after =
+    this.originalSlides
+    .slice(0,this.visible)
+    .map(slide =>
+      slide.cloneNode(true)
+    );
+
+
+    [
+      ...before,
+      ...original,
+      ...after
+    ]
+    .forEach(slide => {
+
+      slide.classList.add("slide");
+
+      this.track.appendChild(slide);
+
+    });
+
+
+    this.index =
+    this.visible;
+
+
+    this.createDots();
+
+
+    this.move(false);
+
+
+    this.start();
+
+  }
+
+
+  /* -----------------------------------------------
+     CARD WIDTH
+  ------------------------------------------------ */
+
+  getStep(){
+
+    const first =
+    this.track.children[0];
+
+    if(!first)
+    return this.viewport.clientWidth;
+
+
+    const style =
+    window.getComputedStyle(
+      this.track
+    );
+
+
+    const gap =
+    parseFloat(style.gap) || 0;
+
+
+    return (
+      first.getBoundingClientRect()
+      .width + gap
+    );
+
+  }
+
+
+  /* -----------------------------------------------
+     MOVE
+  ------------------------------------------------ */
+
+  move(animated = true){
+
+    const step =
+    this.getStep();
+
+
+    this.track.style.transition =
+    animated
+    ? "transform .58s cubic-bezier(.22,.7,.2,1)"
+    : "none";
+
+
+    this.track.style.transform =
+    `translate3d(${-this.index * step}px,0,0)`;
+
+
+    this.updateDots();
+
+  }
+
+
+  /* -----------------------------------------------
+     NEXT
+  ------------------------------------------------ */
+
+  next(){
+
+    if(
+      this.total <= this.visible
+    )
+    return;
+
+
+    this.index++;
+
+    this.move(true);
+
+  }
+
+
+  /* -----------------------------------------------
+     PREVIOUS VIA SWIPE
+  ------------------------------------------------ */
+
+  previous(){
+
+    if(
+      this.total <= this.visible
+    )
+    return;
+
+
+    this.index--;
+
+    this.move(true);
+
+  }
+
+
+  /* -----------------------------------------------
+     SEAMLESS LOOP RESET
+  ------------------------------------------------ */
+
+  normalize(){
+
+    const firstReal =
+    this.visible;
+
+    const lastReal =
+    this.visible +
+    this.total - 1;
+
+
+    if(
+      this.index >
+      lastReal
+    ){
+
+      this.index =
+      firstReal;
+
+      this.move(false);
+
+    }
+
+
+    if(
+      this.index <
+      firstReal
+    ){
+
+      this.index =
+      lastReal;
+
+      this.move(false);
+
+    }
+
+
+    this.updateDots();
+
+  }
+
+
+  /* -----------------------------------------------
+     DOTS
+  ------------------------------------------------ */
+
+  createDots(){
+
+    if(!this.dots)
+    return;
+
+
+    this.dots.innerHTML = "";
+
+
+    for(
+      let i = 0;
+      i < this.total;
+      i++
+    ){
+
+      const button =
+      document.createElement(
+        "button"
+      );
+
+
+      button.type =
+      "button";
+
+
+      button.setAttribute(
+        "aria-label",
+        `Go to slide ${i + 1}`
+      );
+
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          this.pause();
+
+          this.index =
+          this.visible + i;
+
+          this.move(true);
+
+          this.resumeSoon();
+
+        }
+      );
+
+
+      this.dots.appendChild(
+        button
+      );
+
+    }
+
+  }
+
+
+  /* -----------------------------------------------
+     ACTIVE DOT
+  ------------------------------------------------ */
+
+  updateDots(){
+
+    if(!this.dots)
+    return;
+
+
+    let realIndex =
+    this.index - this.visible;
+
+
+    realIndex =
+    (
+      realIndex %
+      this.total +
+      this.total
+    ) %
+    this.total;
+
+
+    Array
+    .from(this.dots.children)
+    .forEach(
+      (dot,index) => {
+
+        dot.classList.toggle(
+          "active",
+          index === realIndex
+        );
+
+      }
+    );
+
+  }
+
+
+  /* -----------------------------------------------
+     AUTO PLAY
+  ------------------------------------------------ */
+
+  start(){
+
+    this.stop();
+
+
+    if(
+      this.total <= this.visible
+    )
+    return;
+
+
+    this.timer =
+    setInterval(
+      () => this.next(),
+      this.speed
+    );
+
+  }
+
+
+  stop(){
+
+    clearInterval(
+      this.timer
+    );
+
+    this.timer = null;
+
+  }
+
+
+  /* -----------------------------------------------
+     PAUSE
+  ------------------------------------------------ */
+
+  pause(){
+
+    this.stop();
+
+    clearTimeout(
+      this.resumeTimer
+    );
+
+  }
+
+
+  /* -----------------------------------------------
+     RESUME
+  ------------------------------------------------ */
+
+  resumeSoon(){
+
+    clearTimeout(
+      this.resumeTimer
+    );
+
+
+    this.resumeTimer =
+    setTimeout(
+      () => this.start(),
+      900
+    );
+
+  }
+
+
+  /* -----------------------------------------------
+     TOUCH / DRAG
+  ------------------------------------------------ */
+
+  pointerDown(event){
+
+    this.pause();
+
+    this.dragging = true;
+
+    this.startX =
+    event.clientX;
+
+    this.currentX =
+    event.clientX;
+
+
+    this.track.style.transition =
+    "none";
+
+
+    this.root.classList.add(
+      "dragging"
+    );
+
+
+    try{
+
+      this.viewport.setPointerCapture(
+        event.pointerId
+      );
+
+    }catch(error){}
+
+  }
+
+
+  pointerMove(event){
+
+    if(!this.dragging)
+    return;
+
+
+    this.currentX =
+    event.clientX;
+
+
+    const distance =
+    this.currentX -
+    this.startX;
+
+
+    const step =
+    this.getStep();
+
+
+    const position =
+    this.index * step -
+    distance;
+
+
+    this.track.style.transform =
+    `translate3d(${-position}px,0,0)`;
+
+  }
+
+
+  pointerUp(event){
+
+    if(!this.dragging)
+    return;
+
+
+    this.dragging = false;
+
+    this.root.classList.remove(
+      "dragging"
+    );
+
+
+    const distance =
+    this.currentX -
+    this.startX;
+
+
+    const threshold =
+    Math.max(
+      40,
+      this.viewport.clientWidth * .10
+    );
+
+
+    if(
+      Math.abs(distance) >
+      threshold
+    ){
+
+      if(distance < 0){
+
+        this.next();
+
+      }else{
+
+        this.previous();
+
+      }
+
+    }else{
+
+      this.move(true);
+
+    }
+
+
+    this.resumeSoon();
+
+
+    try{
+
+      this.viewport.releasePointerCapture(
+        event.pointerId
+      );
+
+    }catch(error){}
+
+  }
+
+
+  /* -----------------------------------------------
+     EVENTS
+  ------------------------------------------------ */
+
+  bind(){
+
+    /*
+      Desktop hover pause
+    */
+
+    this.root.addEventListener(
+      "mouseenter",
+      () => this.pause()
+    );
+
+
+    this.root.addEventListener(
+      "mouseleave",
+      () => this.resumeSoon()
+    );
+
+
+    /*
+      Touch / mouse drag
+    */
+
+    this.viewport.addEventListener(
+      "pointerdown",
+      event =>
+      this.pointerDown(event)
+    );
+
+
+    this.viewport.addEventListener(
+      "pointermove",
+      event =>
+      this.pointerMove(event)
+    );
+
+
+    this.viewport.addEventListener(
+      "pointerup",
+      event =>
+      this.pointerUp(event)
+    );
+
+
+    this.viewport.addEventListener(
+      "pointercancel",
+      event =>
+      this.pointerUp(event)
+    );
+
+
+    /*
+      Seamless boundary correction
+    */
+
+    this.track.addEventListener(
+      "transitionend",
+      () => this.normalize()
+    );
+
+
+    /*
+      Rebuild after resize
+    */
+
+    let resizeTimer;
+
+
+    window.addEventListener(
+      "resize",
+      () => {
+
+        clearTimeout(
+          resizeTimer
+        );
+
+
+        resizeTimer =
+        setTimeout(
+          () => this.build(),
+          180
+        );
+
+      }
+    );
+
+  }
+
+
+  /* -----------------------------------------------
+     INITIALIZE
+  ------------------------------------------------ */
+
+  init(){
+
+    this.bind();
+
+    this.build();
+
+  }
+
+}
+
+
+/* =====================================================
+   ACTIVATE EVERY SLIDER INDEPENDENTLY
+   ===================================================== */
+
+document
+.querySelectorAll(
+  "[data-slider]"
+)
+.forEach(
+  slider =>
+  new InfrictusSlider(slider)
+);
+
+
+/* =====================================================
+   EXTRA ACCESSIBILITY
+   ===================================================== */
+
+document.addEventListener(
+"visibilitychange",
+() => {
+
+  if(
+    document.hidden
+  ){
+
+    document
+    .querySelectorAll(
+      "[data-slider]"
+    )
+    .forEach(
+      slider => {
+
+        if(slider._slider)
+        slider._slider.stop();
+
+      }
+    );
+
+  }
+
 });

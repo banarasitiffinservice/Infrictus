@@ -1247,66 +1247,112 @@ RESPONSIVE
     .hero-card-content{
         padding:18px 5px 5px;
     }
-}
 ```css
-/* Right-side social icons */
+/* =========================================
+   FLOATING SOCIAL ICONS
+   ========================================= */
+
 .social-icons {
   position: fixed;
-  right: 22px;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 18px;
+  bottom: 28px;
+
   display: flex;
   flex-direction: column;
   gap: 12px;
-  z-index: 9999;
+
+  z-index: 999999;
+
+  /* Make sure it stays above the website */
+  pointer-events: auto;
 }
 
+/* Individual button */
 .social-icons a {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
+  box-sizing: border-box;
+
   color: var(--gold);
-  background: rgba(8, 8, 8, 0.9);
-  border: 1px solid var(--line);
+  background: rgba(8, 8, 8, 0.94);
+
+  border: 1px solid var(--gold);
+
   border-radius: 50%;
 
-  transition: all 0.25s ease;
+  text-decoration: none;
+
+  /* IMPORTANT: prevents movement when clicked */
+  transform: none !important;
+
+  /* Golden glow */
+  box-shadow:
+    0 0 8px rgba(214, 173, 85, 0.35),
+    0 0 18px rgba(214, 173, 85, 0.18);
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
+/* Hover */
 .social-icons a:hover {
   color: var(--gold2);
-  border-color: var(--gold);
-  box-shadow: 0 0 18px rgba(214, 173, 85, 0.35);
-  transform: translateX(-4px);
+  background: rgba(214, 173, 85, 0.08);
+
+  transform: scale(1.08) !important;
+
+  box-shadow:
+    0 0 10px rgba(214, 173, 85, 0.65),
+    0 0 25px rgba(214, 173, 85, 0.45),
+    0 0 45px rgba(214, 173, 85, 0.20);
 }
 
+/* Click / active */
+.social-icons a:active {
+  transform: scale(0.98) !important;
+
+  box-shadow:
+    0 0 12px rgba(214, 173, 85, 0.75),
+    0 0 28px rgba(214, 173, 85, 0.45);
+}
+
+/* Icons */
 .social-icons svg {
-  width: 22px;
-  height: 22px;
+  width: 23px;
+  height: 23px;
+
+  display: block;
+
   fill: currentColor;
+
+  flex-shrink: 0;
 }
 
-.social-icons a:last-child svg {
+/* Instagram outline */
+.social-icons a.instagram svg {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
 }
 
-.social-icons a:last-child svg circle:first-of-type {
-  fill: none;
-}
-
+/* Mobile */
 @media (max-width: 600px) {
   .social-icons {
-    right: 12px;
+    left: 12px;
+    bottom: 18px;
+    gap: 9px;
   }
 
   .social-icons a {
-    width: 42px;
-    height: 42px;
+    width: 43px;
+    height: 43px;
   }
 
   .social-icons svg {

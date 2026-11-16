@@ -1806,3 +1806,217 @@ footer{
 @media(prefers-reduced-motion:reduce){
   .btn::after{animation:none}
 }
+
+
+/* =========================================================
+   DESKTOP + OFFICIAL LIGHT CORPORATE THEME
+   Latest override layer — all existing IDs/classes retained.
+   ========================================================= */
+
+:root{
+  --bg:#f2f5f9;
+  --bg2:#e9eef5;
+  --card:#ffffff;
+  --card2:#f7f9fc;
+  --text:#17243a;
+  --muted:#5f6d80;
+  --gold:#b88a35;
+  --gold2:#8d6722;
+  --line:rgba(25,48,79,.14);
+  --glow-gold:0 8px 26px rgba(184,138,53,.12);
+  --glow-cyan:0 8px 26px rgba(48,132,157,.10);
+}
+
+html{
+  background:#f2f5f9;
+  color-scheme:light;
+}
+body{
+  color:#17243a;
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(75,153,174,.12),transparent 34%),
+    radial-gradient(ellipse at 94% 18%,rgba(184,138,53,.10),transparent 32%),
+    linear-gradient(180deg,#f7f9fc 0%,#edf2f7 52%,#f4f6f9 100%);
+  background-attachment:fixed;
+}
+.section-dark{
+  background:linear-gradient(180deg,#eaf0f6 0%,#f5f7fa 100%);
+}
+.site-header{
+  background:rgba(250,252,255,.94);
+  border-bottom:1px solid rgba(25,48,79,.12);
+  box-shadow:0 8px 28px rgba(26,45,70,.06);
+}
+.site-header::after{
+  opacity:.8;
+}
+.nav-links,
+.nav-links.open{
+  background:rgba(250,252,255,.98);
+  border-color:rgba(25,48,79,.12);
+  box-shadow:0 18px 48px rgba(26,45,70,.12);
+}
+.nav-links a:not(.nav-cta){
+  color:#263750;
+}
+.nav-links a:hover:not(.nav-cta){
+  color:#946d27;
+}
+.hero::before{
+  background:radial-gradient(circle,rgba(91,164,183,.15),rgba(184,138,53,.07) 46%,transparent 72%);
+}
+.hero-sub,.section-heading p{
+  color:#58687d;
+}
+.gold-text,.gold,h1 .gold-text,h2 .gold-text{
+  color:#a87925;
+  text-shadow:none;
+}
+.eyebrow{
+  color:#89651f;
+  background:rgba(184,138,53,.08);
+  border-color:rgba(184,138,53,.24);
+}
+.hero-card,.founder-panel,.service-card,.preview-card,.proof-slide,
+.rating-card,.teach-card,.team-card,.payment-card{
+  color:#1b2a40;
+  background:linear-gradient(145deg,#ffffff 0%,#f5f8fb 100%);
+  border:1px solid rgba(29,55,87,.12);
+  box-shadow:0 16px 42px rgba(28,48,73,.09),inset 0 1px 0 rgba(255,255,255,.95);
+}
+.hero-card p,.founder-panel p,.service-card p,.preview-card p,
+.proof-slide p,.rating-card p,.teach-card p,.team-card p,.payment-card p{
+  color:#5b6a7e;
+}
+.service-number,.hero-project-label,.preview-top,
+.founder-caption span,.team-card > span,.teach-card > span{
+  color:#397f91;
+}
+.service-card a,.hero-project-link,.proof-slide span,
+.contact-details span{
+  color:#946d27;
+}
+.preview-art,.preview-art-alt{
+  background:
+    radial-gradient(circle at 18% 20%,rgba(91,164,183,.18),transparent 38%),
+    radial-gradient(circle at 85% 80%,rgba(184,138,53,.13),transparent 40%),
+    linear-gradient(145deg,#e4edf4,#f8fafc);
+  border-color:rgba(49,119,139,.18);
+}
+.contact-form input,.contact-form textarea,.contact-form select{
+  color:#1c2c42;
+  background:#fff;
+  border:1px solid rgba(29,55,87,.18);
+}
+.contact-form input::placeholder,.contact-form textarea::placeholder{
+  color:#8793a3;
+}
+.contact-form input:focus,.contact-form textarea:focus,
+.contact-form select:focus{
+  border-color:#438fa2;
+  box-shadow:0 0 0 3px rgba(67,143,162,.12);
+}
+footer{
+  color:#edf2f8;
+  background:linear-gradient(135deg,#17263c,#203650);
+  border-top:1px solid rgba(184,138,53,.28);
+}
+footer p,footer a,footer .muted{
+  color:#d1dbe7;
+}
+
+/* Reliable animated rim: the gradient is clipped to the button's
+   own rounded outline, never placed behind the button background. */
+.btn{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border:0;
+  border-radius:999px;
+  z-index:0;
+  transform:translateZ(0);
+}
+.btn::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  padding:2px;
+  border-radius:inherit;
+  background:conic-gradient(
+    from var(--btn-rim-angle,0deg),
+    #4da4b5 0deg,
+    #8d86c9 90deg,
+    #d0a34e 180deg,
+    #f0d99e 245deg,
+    #4da4b5 360deg
+  );
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  animation:buttonBorderOrbit 3.2s linear infinite;
+  pointer-events:none;
+}
+.btn::before{
+  z-index:1;
+  pointer-events:none;
+}
+.btn-gold{
+  color:#17243a;
+  background:linear-gradient(115deg,#f5dfa9 0%,#d9b66f 52%,#bd913f 100%);
+  box-shadow:0 7px 20px rgba(143,105,37,.18),inset 0 1px 0 rgba(255,255,255,.65);
+}
+.btn-gold:hover{
+  color:#111d30;
+  box-shadow:0 11px 28px rgba(143,105,37,.23);
+}
+.btn-ghost{
+  color:#24364f;
+  background:linear-gradient(135deg,#fff,#edf3f8);
+  box-shadow:0 5px 16px rgba(26,45,70,.08);
+}
+.btn-ghost:hover{
+  color:#286d80;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(26,45,70,.12);
+}
+@keyframes buttonBorderOrbit{
+  to{--btn-rim-angle:360deg;transform:rotate(360deg)}
+}
+
+/* Smooth desktop layout scaling and generous spacing */
+@media (min-width:1200px){
+  .container{width:min(1240px,100%);margin-inline:auto}
+  .section-pad{padding:88px clamp(5%,calc((100vw - 1240px)/2),9%)}
+  .hero{gap:clamp(44px,6vw,92px);min-height:clamp(650px,76vh,860px)}
+  .hero h1{font-size:clamp(3rem,4.3vw,4.8rem);line-height:1.08}
+  .hero-sub{max-width:620px;font-size:1.08rem}
+  .hero-card,.founder-panel{box-shadow:0 24px 60px rgba(28,48,73,.12)}
+  .service-card:hover,.preview-card:hover,.team-card:hover,
+  .teach-card:hover,.payment-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 24px 54px rgba(28,48,73,.14);
+  }
+}
+@media (min-width:1600px){
+  .container{width:min(1320px,100%)}
+  .section-pad{padding-top:100px;padding-bottom:100px}
+}
+@media (min-width:951px) and (max-width:1199px){
+  .container{width:min(1100px,100%)}
+  .section-pad{padding:76px 4.5%}
+  .hero{gap:36px}
+}
+@media (max-width:950px){
+  .nav-links,.nav-links.open{
+    background:rgba(250,252,255,.98);
+  }
+}
+@media (max-width:620px){
+  body{background-attachment:scroll}
+  .section-pad{padding:58px 5%}
+  .btn{--btn-rim-speed:4.8s}
+}
+@media(prefers-reduced-motion:reduce){
+  .btn::after{animation:none}
+}

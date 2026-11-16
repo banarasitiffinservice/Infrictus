@@ -977,37 +977,3 @@ document.addEventListener(
   }
 
 });
-<!-- 2) Add this script just before </body> -->
-(() => {
-  const root = document.documentElement;
-  const toggle = document.getElementById("themeToggle");
-  if (!toggle) return;
-
-  const icon = toggle.querySelector(".theme-icon");
-  const label = toggle.querySelector(".theme-label");
-
-  // Restore the visitor's previous choice; default is dark.
-  let savedTheme = null;
-  try { savedTheme = localStorage.getItem("site-theme"); } catch (_) {}
-  const initialTheme = savedTheme === "light" ? "light" : "dark";
-
-  function applyTheme(theme) {
-    const isLight = theme === "light";
-    root.dataset.theme = theme;
-    root.style.colorScheme = theme;
-    toggle.setAttribute("aria-pressed", String(isLight));
-    toggle.setAttribute(
-      "aria-label",
-      isLight ? "Switch to dark mode" : "Switch to light mode"
-    );
-    icon.textContent = isLight ? "🌙" : "☀️";
-    label.textContent = isLight ? "Dark mode" : "Light mode";
-    try { localStorage.setItem("site-theme", theme); } catch (_) {}
-  }
-
-  applyTheme(initialTheme);
-
-  toggle.addEventListener("click", () => {
-    applyTheme(root.dataset.theme === "light" ? "dark" : "light");
-  });
-})();

@@ -1247,3 +1247,451 @@ RESPONSIVE
     .hero-card-content{
         padding:18px 5px 5px;
     }
+
+/* =====================================================
+   INFRICTUS — PREMIUM LUXURY UI UPGRADE
+   Paste this at the END of your existing style.css
+===================================================== */
+
+:root {
+  --gold-glow: rgba(214, 173, 85, .35);
+  --gold-light: #ffe3a0;
+  --premium-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+}
+
+/* GLOBAL SMOOTHNESS */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(214,173,85,.055), transparent 35%),
+    radial-gradient(ellipse at 85% 45%, rgba(214,173,85,.035), transparent 35%),
+    var(--bg);
+}
+
+::selection {
+  background: var(--gold);
+  color: #080808;
+}
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* PREMIUM NAVBAR */
+
+.site-header {
+  transition: background .35s ease, border-color .35s ease;
+  box-shadow: 0 8px 35px rgba(0,0,0,.18);
+}
+
+.logo img {
+  transition: transform .4s ease, filter .4s ease;
+}
+
+.logo:hover img {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 12px var(--gold-glow));
+}
+
+.nav-links a {
+  position: relative;
+  transition: color .3s ease;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width .3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-cta {
+  transition: .3s ease !important;
+}
+
+.nav-cta:hover {
+  background: var(--gold) !important;
+  color: #080808 !important;
+  box-shadow: 0 0 25px var(--gold-glow);
+  transform: translateY(-2px);
+}
+
+/* HERO PREMIUM EFFECT */
+
+.hero-copy {
+  animation: heroFadeUp .9s ease both;
+}
+
+.hero-visual {
+  animation: heroFadeIn 1.1s ease both;
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px) scale(.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.hero-card {
+  transition: transform .5s ease, box-shadow .5s ease;
+}
+
+.hero-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 25px 80px rgba(0,0,0,.65),
+    0 0 30px rgba(214,173,85,.12);
+}
+
+.logo-frame {
+  transition: border-color .4s ease, box-shadow .4s ease;
+}
+
+.logo-frame:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px var(--gold-glow);
+}
+
+/* PREMIUM BUTTONS */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform .3s ease,
+    box-shadow .3s ease,
+    background .3s ease;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -80%;
+  width: 45%;
+  height: 200%;
+  background: rgba(255,255,255,.3);
+  transform: rotate(25deg);
+  transition: left .6s ease;
+  z-index: -1;
+}
+
+.btn:hover::before {
+  left: 140%;
+}
+
+.btn-gold:hover {
+  transform: translateY(-4px) scale(1.025);
+  background: var(--gold-light);
+  box-shadow: 0 12px 35px var(--gold-glow);
+}
+
+.btn-ghost {
+  transition: .3s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(214,173,85,.12);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-3px);
+}
+
+/* LUXURY SECTION HEADINGS */
+
+.section-heading h2 {
+  position: relative;
+  display: inline-block;
+}
+
+.section-heading h2::after {
+  content: "";
+  display: block;
+  width: 55px;
+  height: 2px;
+  margin-top: 15px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  transition: width .4s ease;
+}
+
+.section-heading:hover h2::after {
+  width: 100px;
+}
+
+/* PREMIUM CARDS */
+
+.service-card,
+.preview-card,
+.proof-slide,
+.rating-card,
+.teach-card,
+.team-card,
+.payment-card {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition:
+    transform .4s ease,
+    border-color .4s ease,
+    box-shadow .4s ease,
+    background .4s ease;
+}
+
+.service-card::before,
+.preview-card::before,
+.rating-card::before,
+.teach-card::before,
+.team-card::before,
+.payment-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(214,173,85,.09),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity .4s ease;
+  pointer-events: none;
+}
+
+.service-card:hover,
+.preview-card:hover,
+.proof-slide:hover,
+.rating-card:hover,
+.teach-card:hover,
+.team-card:hover,
+.payment-card:hover {
+  transform: translateY(-9px) scale(1.015);
+  border-color: rgba(214,173,85,.65);
+  box-shadow:
+    0 20px 45px rgba(0,0,0,.45),
+    0 0 25px rgba(214,173,85,.09);
+}
+
+.service-card:hover::before,
+.preview-card:hover::before,
+.rating-card:hover::before,
+.teach-card:hover::before,
+.team-card:hover::before,
+.payment-card:hover::before {
+  opacity: 1;
+}
+
+/* CARD TEXT EFFECTS */
+
+.service-card h3,
+.preview-card h3,
+.rating-card h3,
+.team-card h3 {
+  transition: color .3s ease, transform .3s ease;
+}
+
+.service-card:hover h3,
+.preview-card:hover h3,
+.rating-card:hover h3,
+.team-card:hover h3 {
+  color: var(--gold2);
+  transform: translateX(3px);
+}
+
+/* IMAGE HOVER */
+
+.founder-panel img,
+.proof-slide img,
+.hero-card img {
+  transition: transform .7s cubic-bezier(.2,.7,.2,1);
+}
+
+.founder-panel:hover img,
+.proof-slide:hover img,
+.hero-card:hover img {
+  transform: scale(1.045);
+}
+
+.zoomable-image:hover {
+  filter: brightness(1.08);
+}
+
+/* TEAM AVATAR */
+
+.team-avatar {
+  transition: transform .4s ease, box-shadow .4s ease;
+}
+
+.team-card:hover .team-avatar {
+  transform: rotate(-8deg) scale(1.12);
+  box-shadow: 0 0 25px var(--gold-glow);
+}
+
+/* SLIDER DOTS */
+
+.slider-dots button {
+  transition: width .3s ease, background .3s ease,
+              box-shadow .3s ease;
+}
+
+.slider-dots button.active {
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* FAQ */
+
+.faq-item {
+  transition: padding .3s ease, border-color .3s ease;
+}
+
+.faq-item:hover {
+  padding-left: 12px;
+  border-color: var(--gold);
+}
+
+.faq-item summary {
+  transition: color .3s ease;
+}
+
+.faq-item summary:hover {
+  color: var(--gold);
+}
+
+/* CONTACT FORM */
+
+.contact-form input,
+.contact-form textarea,
+.contact-form select {
+  transition: border-color .3s ease, box-shadow .3s ease,
+              background .3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus,
+.contact-form select:focus {
+  border-color: var(--gold);
+  background: #15120c;
+  box-shadow: 0 0 0 3px rgba(214,173,85,.10);
+}
+
+.contact-form button:hover {
+  transform: translateY(-3px);
+}
+
+/* FOUNDER PANEL */
+
+.founder-panel {
+  transition: transform .4s ease, box-shadow .4s ease;
+}
+
+.founder-panel:hover {
+  transform: translateY(-7px);
+  box-shadow: var(--premium-shadow);
+}
+
+/* FOOTER */
+
+footer {
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(214,173,85,.025)
+  );
+}
+
+footer a {
+  transition: color .3s ease, padding .3s ease;
+}
+
+footer a:hover {
+  padding-left: 4px;
+}
+
+/* KEYBOARD ACCESSIBILITY */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+/* MOBILE OPTIMIZATION */
+
+@media (max-width: 950px) {
+  .service-card:hover,
+  .preview-card:hover,
+  .proof-slide:hover,
+  .rating-card:hover,
+  .teach-card:hover,
+  .team-card:hover,
+  .payment-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 620px) {
+  .hero-copy,
+  .hero-visual {
+    animation-duration: .65s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .service-card:hover,
+  .preview-card:hover,
+  .proof-slide:hover,
+  .rating-card:hover,
+  .teach-card:hover,
+  .team-card:hover,
+  .payment-card:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* REDUCED MOTION ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

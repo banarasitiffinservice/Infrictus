@@ -1,979 +1,979 @@
-/* =====================================================
-   INFRICTUS FINAL SLIDER ENGINE
-   ===================================================== */
 
+/* =========================================================
+   INFRICTUS — PREMIUM WEBSITE JAVASCRIPT
+   Compatible with your index.html and styles.css
+========================================================= */
+
+"use strict";
+
+/* =========================================================
+   1. CONFIGURATION
+========================================================= */
+
+// WhatsApp number: country code + number, digits only.
 const WHATSAPP_NUMBER = "916388605805";
 
 
-/* =====================================================
-   MOBILE NAV
-   ===================================================== */
+/* =========================================================
+   2. MOBILE NAVIGATION
+========================================================= */
 
-const menuToggle =
-document.querySelector(".menu-toggle");
+const menuToggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelector(".nav-links");
 
-const navLinks =
-document.querySelector(".nav-links");
+if (menuToggle && navLinks) {
 
-
-menuToggle?.addEventListener("click", () => {
-
-  const open =
-  navLinks.classList.toggle("open");
-
-  menuToggle.setAttribute(
-    "aria-expanded",
-    open ? "true" : "false"
-  );
-
-  menuToggle.setAttribute(
-    "aria-label",
-    open ? "Close menu" : "Open menu"
-  );
-
-});
-
-
-document.querySelectorAll(".nav-links a")
-.forEach(link => {
-
-  link.addEventListener("click", () => {
-
-    navLinks.classList.remove("open");
-
-    menuToggle?.setAttribute(
-      "aria-expanded",
-      "false"
-    );
-
-  });
-
-});
-
-
-/* =====================================================
-   SCROLL REVEAL
-   ===================================================== */
-
-const revealObserver =
-new IntersectionObserver(
-(entries) => {
-
-  entries.forEach(entry => {
-
-    if(entry.isIntersecting){
-
-      entry.target.classList.add("visible");
-
+    function closeMenu() {
+        navLinks.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Open menu");
+        menuToggle.textContent = "☰";
     }
 
-  });
+    function openMenu() {
+        navLinks.classList.add("open");
+        menuToggle.setAttribute("aria-expanded", "true");
+        menuToggle.setAttribute("aria-label", "Close menu");
+        menuToggle.textContent = "✕";
+    }
 
-},
-{
-  threshold:.12
-});
+    menuToggle.addEventListener("click", () => {
+        const isOpen = navLinks.classList.contains("open");
+
+        if (isOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
+
+    // Close menu after clicking a navigation link.
+    navLinks.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", closeMenu);
+    });
+
+    // Close menu when clicking outside.
+    document.addEventListener("click", event => {
+        if (
+            navLinks.classList.contains("open") &&
+            !navLinks.contains(event.target) &&
+            !menuToggle.contains(event.target)
+        ) {
+            closeMenu();
+        }
+    });
+
+    // Close menu with Escape.
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            closeMenu();
+        }
+    });
+
+    // Close mobile menu when moving to desktop width.
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 950) {
+            closeMenu();
+        }
+    });
+}
 
 
-document
-.querySelectorAll(".reveal")
-.forEach(el =>
-revealObserver.observe(el)
-);
+/* =========================================================
+   3. SCROLL REVEAL ANIMATION
+========================================================= */
+
+const revealElements = document.querySelectorAll(".reveal");
+
+if ("IntersectionObserver" in window) {
+
+    const revealObserver = new IntersectionObserver(
+        (entries, observer) => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add("visible");
+
+                    observer.unobserve(entry.target);
+                }
+
+            });
+
+        },
+        {
+            threshold: 0.12,
+            rootMargin: "0px 0px -35px 0px"
+        }
+    );
+
+    revealElements.forEach(element => {
+        revealObserver.observe(element);
+    });
+
+} else {
+
+    // Fallback for older browsers.
+    revealElements.forEach(element => {
+        element.classList.add("visible");
+    });
+
+}
 
 
-/* =====================================================
-   WHATSAPP CONTACT
-   ===================================================== */
+/* =========================================================
+   4. CONTACT FORM — WHATSAPP
+========================================================= */
 
-document
-.getElementById("contact-form")
-?.addEventListener("submit", event => {
+const contactForm = document.querySelector("#contact-form");
 
-  event.preventDefault();
+if (contactForm) {
 
-  const form =
-  new FormData(event.currentTarget);
+    contactForm.addEventListener("submit", event => {
 
-  const name =
-  form.get("name") || "";
+        event.preventDefault();
 
-  const service =
-  form.get("service") || "";
+        const name = contactForm.querySelector(
+            '[name="name"]'
+        )?.value.trim();
 
-  const message =
-  form.get("message") || "";
+        const service = contactForm.querySelector(
+            '[name="service"]'
+        )?.value.trim();
 
+        const message = contactForm.querySelector(
+            '[name="message"]'
+        )?.value.trim();
 
-  const text =
-`Hello INFRICTUS,
+        if (!name || !message) {
+            alert("Please enter your name and project message.");
+            return;
+        }
+
+        if (
+            !WHATSAPP_NUMBER ||
+            !/^\d{10,15}$/.test(WHATSAPP_NUMBER)
+        ) {
+            alert("WhatsApp number is not configured correctly.");
+            return;
+        }
+
+        const whatsappMessage = `
+Hello INFRICTUS!
 
 Name: ${name}
-Service: ${service}
 
-Message:
-${message}`;
+Service Required: ${service || "Not specified"}
 
+Project Details:
+${message}
 
-  const url =
-  `https://wa.me/${WHATSAPP_NUMBER}` +
-  `?text=${encodeURIComponent(text)}`;
+I would like to discuss my project.
+        `.trim();
 
+        const whatsappURL =
+            `https://wa.me/${WHATSAPP_NUMBER}?text=` +
+            encodeURIComponent(whatsappMessage);
 
-  window.open(
-    url,
-    "_blank",
-    "noopener,noreferrer"
-  );
-
-});
-
-
-/* =====================================================
-   IMAGE MODAL
-   ===================================================== */
-
-const imageModal =
-document.getElementById("image-modal");
-
-const modalImage =
-document.getElementById("modal-image");
-
-const modalClose =
-document.getElementById("modal-close");
-
-
-function openImage(image){
-
-  if(!imageModal || !modalImage)
-  return;
-
-  modalImage.src =
-  image.currentSrc || image.src;
-
-  modalImage.alt =
-  image.alt || "INFRICTUS preview";
-
-  imageModal.classList.add("open");
-
-  imageModal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-  document.body.style.overflow =
-  "hidden";
-
-}
-
-
-function closeImage(){
-
-  imageModal?.classList.remove("open");
-
-  imageModal?.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  if(modalImage)
-  modalImage.src = "";
-
-  document.body.style.overflow =
-  "";
-
-}
-
-
-/* =========================================
-   IMAGE CLICK HANDLER
-   Works with slider cloned images
-========================================= */
-
-document.addEventListener("click", event => {
-
-  const image = event.target.closest(".zoomable-image");
-
-  if(!image) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  openImage(image);
-
-});
-
-modalClose?.addEventListener(
-"click",
-closeImage
-);
-
-
-imageModal?.addEventListener(
-"click",
-event => {
-
-  if(event.target === imageModal)
-  closeImage();
-
-});
-
-
-document.addEventListener(
-"keydown",
-event => {
-
-  if(event.key === "Escape")
-  closeImage();
-
-});
-
-
-/* =====================================================
-   UNIVERSAL TOUCH SLIDER
-   ===================================================== */
-
-class InfrictusSlider{
-
-  constructor(root){
-
-    this.root = root;
-
-    this.viewport =
-    root.querySelector(
-      ".slider-viewport"
-    );
-
-    this.track =
-    root.querySelector(
-      ".slider-track"
-    );
-
-    this.dots =
-    root.querySelector(
-      ".slider-dots"
-    );
-
-    if(
-      !this.viewport ||
-      !this.track
-    ){
-
-      return;
-
-    }
-
-
-    this.originalSlides =
-    Array.from(
-      this.track.children
-    );
-
-
-    this.total =
-    this.originalSlides.length;
-
-
-    this.index = 0;
-
-    this.timer = null;
-
-    this.resumeTimer = null;
-
-    this.dragging = false;
-
-    this.startX = 0;
-
-    this.currentX = 0;
-
-    this.speed =
-    Number(
-      root.dataset.speed || 4000
-    );
-
-
-    this.init();
-
-  }
-
-
-  /* -----------------------------------------------
-     NUMBER OF VISIBLE SLIDES
-  ------------------------------------------------ */
-
-  getVisible(){
-
-    if(window.innerWidth <= 620)
-    return 1;
-
-    if(window.innerWidth <= 950)
-    return 2;
-
-    return 3;
-
-  }
-
-
-  /* -----------------------------------------------
-     BUILD SLIDER
-  ------------------------------------------------ */
-
-  build(){
-
-    this.stop();
-
-    this.visible =
-    Math.min(
-      this.getVisible(),
-      this.total
-    );
-
-
-    this.track.innerHTML = "";
-
-
-    /*
-      Clone last slides before original slides
-      and first slides after original slides.
-      This creates the seamless loop.
-    */
-
-
-    const before =
-    this.originalSlides
-    .slice(-this.visible)
-    .map(slide =>
-      slide.cloneNode(true)
-    );
-
-
-    const original =
-    this.originalSlides
-    .map(slide =>
-      slide.cloneNode(true)
-    );
-
-
-    const after =
-    this.originalSlides
-    .slice(0,this.visible)
-    .map(slide =>
-      slide.cloneNode(true)
-    );
-
-
-    [
-      ...before,
-      ...original,
-      ...after
-    ]
-    .forEach(slide => {
-
-      slide.classList.add("slide");
-
-      this.track.appendChild(slide);
+        window.open(
+            whatsappURL,
+            "_blank",
+            "noopener,noreferrer"
+        );
 
     });
 
-
-    this.index =
-    this.visible;
+}
 
 
-    this.createDots();
+/* =========================================================
+   5. IMAGE ZOOM MODAL
+========================================================= */
 
+const imageModal = document.querySelector("#image-modal");
+const modalImage = document.querySelector("#modal-image");
+const modalClose = document.querySelector("#modal-close");
 
-    this.move(false);
+let previouslyFocusedElement = null;
 
+if (imageModal && modalImage && modalClose) {
 
-    this.start();
+    function openImageModal(image) {
 
-  }
+        previouslyFocusedElement = document.activeElement;
 
+        modalImage.src = image.currentSrc || image.src;
+        modalImage.alt = image.alt || "Expanded preview";
 
-  /* -----------------------------------------------
-     CARD WIDTH
-  ------------------------------------------------ */
+        imageModal.classList.add("open");
+        imageModal.setAttribute("aria-hidden", "false");
 
-  getStep(){
+        document.body.style.overflow = "hidden";
 
-    const first =
-    this.track.children[0];
-
-    if(!first)
-    return this.viewport.clientWidth;
-
-
-    const style =
-    window.getComputedStyle(
-      this.track
-    );
-
-
-    const gap =
-    parseFloat(style.gap) || 0;
-
-
-    return (
-      first.getBoundingClientRect()
-      .width + gap
-    );
-
-  }
-
-
-  /* -----------------------------------------------
-     MOVE
-  ------------------------------------------------ */
-
-  move(animated = true){
-
-    const step =
-    this.getStep();
-
-
-    this.track.style.transition =
-    animated
-    ? "transform .58s cubic-bezier(.22,.7,.2,1)"
-    : "none";
-
-
-    this.track.style.transform =
-    `translate3d(${-this.index * step}px,0,0)`;
-
-
-    this.updateDots();
-
-  }
-
-
-  /* -----------------------------------------------
-     NEXT
-  ------------------------------------------------ */
-
-  next(){
-
-    if(
-      this.total <= this.visible
-    )
-    return;
-
-
-    this.index++;
-
-    this.move(true);
-
-  }
-
-
-  /* -----------------------------------------------
-     PREVIOUS VIA SWIPE
-  ------------------------------------------------ */
-
-  previous(){
-
-    if(
-      this.total <= this.visible
-    )
-    return;
-
-
-    this.index--;
-
-    this.move(true);
-
-  }
-
-
-  /* -----------------------------------------------
-     SEAMLESS LOOP RESET
-  ------------------------------------------------ */
-
-  normalize(){
-
-    const firstReal =
-    this.visible;
-
-    const lastReal =
-    this.visible +
-    this.total - 1;
-
-
-    if(
-      this.index >
-      lastReal
-    ){
-
-      this.index =
-      firstReal;
-
-      this.move(false);
-
+        modalClose.focus();
     }
 
+    function closeImageModal() {
 
-    if(
-      this.index <
-      firstReal
-    ){
-
-      this.index =
-      lastReal;
-
-      this.move(false);
-
-    }
-
-
-    this.updateDots();
-
-  }
-
-
-  /* -----------------------------------------------
-     DOTS
-  ------------------------------------------------ */
-
-  createDots(){
-
-    if(!this.dots)
-    return;
-
-
-    this.dots.innerHTML = "";
-
-
-    for(
-      let i = 0;
-      i < this.total;
-      i++
-    ){
-
-      const button =
-      document.createElement(
-        "button"
-      );
-
-
-      button.type =
-      "button";
-
-
-      button.setAttribute(
-        "aria-label",
-        `Go to slide ${i + 1}`
-      );
-
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          this.pause();
-
-          this.index =
-          this.visible + i;
-
-          this.move(true);
-
-          this.resumeSoon();
-
+        if (!imageModal.classList.contains("open")) {
+            return;
         }
-      );
 
+        imageModal.classList.remove("open");
+        imageModal.setAttribute("aria-hidden", "true");
 
-      this.dots.appendChild(
-        button
-      );
+        document.body.style.overflow = "";
+
+        modalImage.removeAttribute("src");
+
+        if (
+            previouslyFocusedElement &&
+            typeof previouslyFocusedElement.focus === "function"
+        ) {
+            previouslyFocusedElement.focus();
+        }
 
     }
 
-  }
+    // Open image using event delegation.
+    document.addEventListener("click", event => {
 
+        const image = event.target.closest(".zoomable-image");
 
-  /* -----------------------------------------------
-     ACTIVE DOT
-  ------------------------------------------------ */
+        if (image) {
+            openImageModal(image);
+        }
 
-  updateDots(){
+    });
 
-    if(!this.dots)
-    return;
+    modalClose.addEventListener("click", closeImageModal);
 
+    // Close by clicking the dark backdrop.
+    imageModal.addEventListener("click", event => {
 
-    let realIndex =
-    this.index - this.visible;
+        if (event.target === imageModal) {
+            closeImageModal();
+        }
 
+    });
 
-    realIndex =
-    (
-      realIndex %
-      this.total +
-      this.total
-    ) %
-    this.total;
+    // Close with Escape.
+    document.addEventListener("keydown", event => {
 
+        if (
+            event.key === "Escape" &&
+            imageModal.classList.contains("open")
+        ) {
+            closeImageModal();
+        }
 
-    Array
-    .from(this.dots.children)
-    .forEach(
-      (dot,index) => {
-
-        dot.classList.toggle(
-          "active",
-          index === realIndex
-        );
-
-      }
-    );
-
-  }
-
-
-  /* -----------------------------------------------
-     AUTO PLAY
-  ------------------------------------------------ */
-
-  start(){
-
-    this.stop();
-
-
-    if(
-      this.total <= this.visible
-    )
-    return;
-
-
-    this.timer =
-    setInterval(
-      () => this.next(),
-      this.speed
-    );
-
-  }
-
-
-  stop(){
-
-    clearInterval(
-      this.timer
-    );
-
-    this.timer = null;
-
-  }
-
-
-  /* -----------------------------------------------
-     PAUSE
-  ------------------------------------------------ */
-
-  pause(){
-
-    this.stop();
-
-    clearTimeout(
-      this.resumeTimer
-    );
-
-  }
-
-
-  /* -----------------------------------------------
-     RESUME
-  ------------------------------------------------ */
-
-  resumeSoon(){
-
-    clearTimeout(
-      this.resumeTimer
-    );
-
-
-    this.resumeTimer =
-    setTimeout(
-      () => this.start(),
-      900
-    );
-
-  }
-
-
-  /* -----------------------------------------------
-     TOUCH / DRAG
-  ------------------------------------------------ */
-
-  pointerDown(event){
-
-    this.pause();
-
-    this.dragging = true;
-
-    this.startX =
-    event.clientX;
-
-    this.currentX =
-    event.clientX;
-
-
-    this.track.style.transition =
-    "none";
-
-
-    this.root.classList.add(
-      "dragging"
-    );
-
-
-    try{
-
-      this.viewport.setPointerCapture(
-        event.pointerId
-      );
-
-    }catch(error){}
-
-  }
-
-
-  pointerMove(event){
-
-    if(!this.dragging)
-    return;
-
-
-    this.currentX =
-    event.clientX;
-
-
-    const distance =
-    this.currentX -
-    this.startX;
-
-
-    const step =
-    this.getStep();
-
-
-    const position =
-    this.index * step -
-    distance;
-
-
-    this.track.style.transform =
-    `translate3d(${-position}px,0,0)`;
-
-  }
-
-
-  pointerUp(event){
-
-    if(!this.dragging)
-    return;
-
-
-    this.dragging = false;
-
-    this.root.classList.remove(
-      "dragging"
-    );
-
-
-    const distance =
-    this.currentX -
-    this.startX;
-
-
-    const threshold =
-    Math.max(
-      40,
-      this.viewport.clientWidth * .10
-    );
-
-
-    if(
-      Math.abs(distance) >
-      threshold
-    ){
-
-      if(distance < 0){
-
-        this.next();
-
-      }else{
-
-        this.previous();
-
-      }
-
-    }else{
-
-      this.move(true);
-
-    }
-
-
-    this.resumeSoon();
-
-
-    try{
-
-      this.viewport.releasePointerCapture(
-        event.pointerId
-      );
-
-    }catch(error){}
-
-  }
-
-
-  /* -----------------------------------------------
-     EVENTS
-  ------------------------------------------------ */
-
-  bind(){
-
-    /*
-      Desktop hover pause
-    */
-
-    this.root.addEventListener(
-      "mouseenter",
-      () => this.pause()
-    );
-
-
-    this.root.addEventListener(
-      "mouseleave",
-      () => this.resumeSoon()
-    );
-
-
-    /*
-      Touch / mouse drag
-    */
-
-    this.viewport.addEventListener(
-      "pointerdown",
-      event =>
-      this.pointerDown(event)
-    );
-
-
-    this.viewport.addEventListener(
-      "pointermove",
-      event =>
-      this.pointerMove(event)
-    );
-
-
-    this.viewport.addEventListener(
-      "pointerup",
-      event =>
-      this.pointerUp(event)
-    );
-
-
-    this.viewport.addEventListener(
-      "pointercancel",
-      event =>
-      this.pointerUp(event)
-    );
-
-
-    /*
-      Seamless boundary correction
-    */
-
-    this.track.addEventListener(
-      "transitionend",
-      () => this.normalize()
-    );
-
-
-    /*
-      Rebuild after resize
-    */
-
-    let resizeTimer;
-
-
-    window.addEventListener(
-      "resize",
-      () => {
-
-        clearTimeout(
-          resizeTimer
-        );
-
-
-        resizeTimer =
-        setTimeout(
-          () => this.build(),
-          180
-        );
-
-      }
-    );
-
-  }
-
-
-  /* -----------------------------------------------
-     INITIALIZE
-  ------------------------------------------------ */
-
-  init(){
-
-    this.bind();
-
-    this.build();
-
-  }
+    });
 
 }
 
 
-/* =====================================================
-   ACTIVATE EVERY SLIDER INDEPENDENTLY
-   ===================================================== */
+/* =========================================================
+   6. PREMIUM INFINITE SLIDER
+========================================================= */
 
-document
-.querySelectorAll(
-  "[data-slider]"
-)
-.forEach(
-  slider =>
-  new InfrictusSlider(slider)
-);
+class InfrictusSlider {
+
+    constructor(root) {
+
+        this.root = root;
+
+        this.viewport = root.querySelector(".slider-viewport");
+        this.track = root.querySelector(".slider-track");
+        this.dotsContainer = root.querySelector(".slider-dots");
+
+        if (!this.viewport || !this.track) {
+            return;
+        }
+
+        this.originalSlides = Array.from(
+            this.track.querySelectorAll(".slide")
+        );
+
+        if (this.originalSlides.length < 2) {
+            return;
+        }
+
+        this.speed = Math.max(
+            1500,
+            Number(root.dataset.speed) || 4000
+        );
+
+        this.index = 0;
+        this.visibleCount = 1;
+        this.cloneCount = 0;
+
+        this.step = 0;
+        this.timer = null;
+
+        this.isPaused = false;
+        this.isDragging = false;
+        this.startX = 0;
+        this.currentX = 0;
+        this.dragDistance = 0;
+
+        this.pointerId = null;
+
+        this.originalSlides.forEach(slide => {
+            slide.setAttribute("draggable", "false");
+        });
+
+        this.build();
+        this.bindEvents();
+
+        this.startAutoPlay();
+
+        // Expose instance for debugging if needed.
+        root._slider = this;
+    }
 
 
-/* =====================================================
-   EXTRA ACCESSIBILITY
-   ===================================================== */
+    /* -----------------------------------------------------
+       RESPONSIVE VISIBLE SLIDES
+    ----------------------------------------------------- */
 
-document.addEventListener(
-"visibilitychange",
-() => {
+    getVisibleCount() {
 
-  if(
-    document.hidden
-  ){
+        if (window.innerWidth <= 620) {
+            return 1;
+        }
 
-    document
-    .querySelectorAll(
-      "[data-slider]"
-    )
-    .forEach(
-      slider => {
+        if (window.innerWidth <= 950) {
+            return 2;
+        }
 
-        if(slider._slider)
-        slider._slider.stop();
+        return 3;
+    }
 
-      }
-    );
 
-  }
+    /* -----------------------------------------------------
+       BUILD SLIDER
+    ----------------------------------------------------- */
+
+    build() {
+
+        this.stopAutoPlay();
+
+        this.visibleCount = Math.min(
+            this.getVisibleCount(),
+            this.originalSlides.length
+        );
+
+        this.cloneCount = this.visibleCount;
+
+        this.track.style.transition = "none";
+
+        this.track.innerHTML = "";
+
+        // Clones before the original slides.
+        const beforeClones = this.originalSlides
+            .slice(-this.cloneCount)
+            .map(slide => this.createClone(slide));
+
+        // Original slides.
+        const originals = this.originalSlides;
+
+        // Clones after original slides.
+        const afterClones = this.originalSlides
+            .slice(0, this.cloneCount)
+            .map(slide => this.createClone(slide));
+
+        [
+            ...beforeClones,
+            ...originals,
+            ...afterClones
+        ].forEach(slide => {
+            this.track.appendChild(slide);
+        });
+
+        this.index = this.cloneCount;
+
+        this.createDots();
+
+        this.calculateStep();
+
+        this.updatePosition(false);
+
+        this.updateDots();
+
+        requestAnimationFrame(() => {
+            this.track.style.transition =
+                "transform .55s cubic-bezier(.22,.75,.25,1)";
+        });
+
+        if (!this.isPaused) {
+            this.startAutoPlay();
+        }
+
+    }
+
+
+    /* -----------------------------------------------------
+       CLONE SLIDE
+    ----------------------------------------------------- */
+
+    createClone(slide) {
+
+        const clone = slide.cloneNode(true);
+
+        clone.setAttribute("aria-hidden", "true");
+
+        // Prevent cloned links and controls from receiving focus.
+        clone.querySelectorAll("a, button, input, select, textarea")
+            .forEach(element => {
+                element.setAttribute("tabindex", "-1");
+            });
+
+        return clone;
+    }
+
+
+    /* -----------------------------------------------------
+       CALCULATE SLIDE WIDTH + GAP
+    ----------------------------------------------------- */
+
+    calculateStep() {
+
+        const firstSlide = this.track.children[0];
+
+        if (!firstSlide) {
+            return;
+        }
+
+        const slideWidth =
+            firstSlide.getBoundingClientRect().width;
+
+        const styles = window.getComputedStyle(this.track);
+
+        const gap = parseFloat(styles.columnGap) ||
+                    parseFloat(styles.gap) ||
+                    0;
+
+        this.step = slideWidth + gap;
+
+    }
+
+
+    /* -----------------------------------------------------
+       UPDATE SLIDER POSITION
+    ----------------------------------------------------- */
+
+    updatePosition(animate = true) {
+
+        if (!this.step) {
+            this.calculateStep();
+        }
+
+        this.track.style.transition = animate
+            ? "transform .55s cubic-bezier(.22,.75,.25,1)"
+            : "none";
+
+        const distance = this.index * this.step;
+
+        this.track.style.transform =
+            `translate3d(${-distance}px,0,0)`;
+
+    }
+
+
+    /* -----------------------------------------------------
+       CREATE NAVIGATION DOTS
+    ----------------------------------------------------- */
+
+    createDots() {
+
+        if (!this.dotsContainer) {
+            return;
+        }
+
+        this.dotsContainer.innerHTML = "";
+
+        this.originalSlides.forEach((slide, index) => {
+
+            const dot = document.createElement("button");
+
+            dot.type = "button";
+
+            dot.setAttribute(
+                "aria-label",
+                `Go to slide ${index + 1}`
+            );
+
+            dot.addEventListener("click", () => {
+
+                this.goTo(index);
+
+                this.restartAutoPlay();
+
+            });
+
+            this.dotsContainer.appendChild(dot);
+
+        });
+
+    }
+
+
+    /* -----------------------------------------------------
+       ACTIVE DOT
+    ----------------------------------------------------- */
+
+    updateDots() {
+
+        if (!this.dotsContainer) {
+            return;
+        }
+
+        const dots = this.dotsContainer.querySelectorAll("button");
+
+        const activeIndex =
+            (
+                this.index - this.cloneCount +
+                this.originalSlides.length
+            ) % this.originalSlides.length;
+
+        dots.forEach((dot, index) => {
+
+            const active = index === activeIndex;
+
+            dot.classList.toggle("active", active);
+
+            dot.setAttribute(
+                "aria-current",
+                active ? "true" : "false"
+            );
+
+        });
+
+    }
+
+
+    /* -----------------------------------------------------
+       GO TO SLIDE
+    ----------------------------------------------------- */
+
+    goTo(index) {
+
+        this.index = this.cloneCount + index;
+
+        this.updatePosition(true);
+        this.updateDots();
+
+    }
+
+
+    /* -----------------------------------------------------
+       NEXT SLIDE
+    ----------------------------------------------------- */
+
+    next() {
+
+        if (this.isDragging) {
+            return;
+        }
+
+        this.index++;
+
+        this.updatePosition(true);
+        this.updateDots();
+
+    }
+
+
+    /* -----------------------------------------------------
+       PREVIOUS SLIDE
+    ----------------------------------------------------- */
+
+    previous() {
+
+        if (this.isDragging) {
+            return;
+        }
+
+        this.index--;
+
+        this.updatePosition(true);
+        this.updateDots();
+
+    }
+
+
+    /* -----------------------------------------------------
+       INFINITE LOOP RESET
+    ----------------------------------------------------- */
+
+    handleTransitionEnd() {
+
+        const total = this.originalSlides.length;
+
+        if (this.index >= total + this.cloneCount) {
+
+            this.index = this.cloneCount;
+
+            this.updatePosition(false);
+
+        }
+
+        if (this.index < this.cloneCount) {
+
+            this.index = total + this.cloneCount - 1;
+
+            this.updatePosition(false);
+
+        }
+
+        this.updateDots();
+
+    }
+
+
+    /* -----------------------------------------------------
+       AUTOPLAY
+    ----------------------------------------------------- */
+
+    startAutoPlay() {
+
+        this.stopAutoPlay();
+
+        if (
+            this.isPaused ||
+            document.hidden ||
+            this.originalSlides.length < 2
+        ) {
+            return;
+        }
+
+        this.timer = window.setInterval(() => {
+            this.next();
+        }, this.speed);
+
+    }
+
+
+    stopAutoPlay() {
+
+        if (this.timer !== null) {
+
+            clearInterval(this.timer);
+
+            this.timer = null;
+
+        }
+
+    }
+
+
+    restartAutoPlay() {
+
+        this.stopAutoPlay();
+
+        if (!this.isPaused && !document.hidden) {
+            this.startAutoPlay();
+        }
+
+    }
+
+
+    /* -----------------------------------------------------
+       PAUSE / RESUME
+    ----------------------------------------------------- */
+
+    pause() {
+
+        this.isPaused = true;
+
+        this.stopAutoPlay();
+
+    }
+
+
+    resume() {
+
+        this.isPaused = false;
+
+        this.startAutoPlay();
+
+    }
+
+
+    /* -----------------------------------------------------
+       POINTER / TOUCH DRAG
+    ----------------------------------------------------- */
+
+    pointerDown(event) {
+
+        // Only respond to the primary pointer.
+        if (
+            event.button !== undefined &&
+            event.button !== 0
+        ) {
+            return;
+        }
+
+        this.isDragging = true;
+        this.pointerId = event.pointerId;
+
+        this.startX = event.clientX;
+        this.currentX = event.clientX;
+        this.dragDistance = 0;
+
+        this.stopAutoPlay();
+
+        this.track.style.transition = "none";
+
+        try {
+            this.viewport.setPointerCapture(event.pointerId);
+        } catch (error) {
+            // Pointer capture may not be available.
+        }
+
+    }
+
+
+    pointerMove(event) {
+
+        if (!this.isDragging) {
+            return;
+        }
+
+        this.currentX = event.clientX;
+
+        this.dragDistance = this.currentX - this.startX;
+
+        const baseDistance = this.index * this.step;
+
+        this.track.style.transform =
+            `translate3d(${
+                -baseDistance + this.dragDistance
+            }px,0,0)`;
+
+    }
+
+
+    pointerUp(event, cancelled = false) {
+
+        if (!this.isDragging) {
+            return;
+        }
+
+        this.isDragging = false;
+
+        if (cancelled) {
+            this.dragDistance = 0;
+        }
+
+        const threshold = Math.max(
+            35,
+            this.step * 0.15
+        );
+
+        if (this.dragDistance < -threshold) {
+
+            this.index++;
+
+        } else if (this.dragDistance > threshold) {
+
+            this.index--;
+
+        }
+
+        this.updatePosition(true);
+        this.updateDots();
+
+        this.pointerId = null;
+
+        if (!this.isPaused) {
+            this.startAutoPlay();
+        }
+
+    }
+
+
+    /* -----------------------------------------------------
+       EVENT LISTENERS
+    ----------------------------------------------------- */
+
+    bindEvents() {
+
+        this.track.addEventListener(
+            "transitionend",
+            event => {
+
+                if (event.target === this.track) {
+                    this.handleTransitionEnd();
+                }
+
+            }
+        );
+
+        // Pause on mouse hover.
+        this.root.addEventListener("mouseenter", () => {
+            this.pause();
+        });
+
+        this.root.addEventListener("mouseleave", () => {
+            this.resume();
+        });
+
+        // Pause when keyboard users focus slider controls.
+        this.root.addEventListener("focusin", () => {
+            this.pause();
+        });
+
+        this.root.addEventListener("focusout", event => {
+
+            if (!this.root.contains(event.relatedTarget)) {
+                this.resume();
+            }
+
+        });
+
+        // Drag support.
+        this.viewport.addEventListener(
+            "pointerdown",
+            event => this.pointerDown(event)
+        );
+
+        this.viewport.addEventListener(
+            "pointermove",
+            event => this.pointerMove(event)
+        );
+
+        this.viewport.addEventListener(
+            "pointerup",
+            event => this.pointerUp(event)
+        );
+
+        this.viewport.addEventListener(
+            "pointercancel",
+            event => this.pointerUp(event, true)
+        );
+
+        this.viewport.addEventListener(
+            "lostpointercapture",
+            () => {
+
+                if (this.isDragging) {
+                    this.pointerUp(null, true);
+                }
+
+            }
+        );
+
+        // Prevent images from being dragged separately.
+        this.viewport.addEventListener("dragstart", event => {
+            event.preventDefault();
+        });
+
+    }
+
+
+    /* -----------------------------------------------------
+       DESTROY
+    ----------------------------------------------------- */
+
+    destroy() {
+
+        this.stopAutoPlay();
+
+        this.root._slider = null;
+
+    }
+
+}
+
+
+/* =========================================================
+   7. INITIALIZE ALL SLIDERS
+========================================================= */
+
+const sliderInstances = [];
+
+document.querySelectorAll("[data-slider]").forEach(root => {
+
+    const slider = new InfrictusSlider(root);
+
+    if (slider.track) {
+        sliderInstances.push(slider);
+    }
 
 });
+
+
+/* =========================================================
+   8. RESIZE HANDLING
+========================================================= */
+
+let resizeTimer = null;
+
+window.addEventListener("resize", () => {
+
+    clearTimeout(resizeTimer);
+
+    resizeTimer = setTimeout(() => {
+
+        sliderInstances.forEach(slider => {
+
+            const newVisibleCount = slider.getVisibleCount();
+
+            if (newVisibleCount !== slider.visibleCount) {
+
+                slider.build();
+
+            } else {
+
+                slider.calculateStep();
+                slider.updatePosition(false);
+
+            }
+
+        });
+
+    }, 180);
+
+});
+
+
+/* =========================================================
+   9. PAUSE SLIDERS WHEN TAB IS HIDDEN
+========================================================= */
+
+document.addEventListener("visibilitychange", () => {
+
+    sliderInstances.forEach(slider => {
+
+        if (document.hidden) {
+
+            slider.stopAutoPlay();
+
+        } else if (!slider.isPaused) {
+
+            slider.startAutoPlay();
+
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   10. PAGE LOAD
+========================================================= */
+
+window.addEventListener("load", () => {
+
+    sliderInstances.forEach(slider => {
+
+        slider.calculateStep();
+        slider.updatePosition(false);
+
+    });
+
+});
+
